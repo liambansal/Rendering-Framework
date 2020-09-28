@@ -72,7 +72,7 @@ std::string lineData(const std::string& in)
 
 int main()
 {
-	std::string filename = "C:/obj_models/basic_box.OBJ";
+	std::string filename = "Resources/obj_models/basic_box.OBJ";
 	std::cout << "Attempting to open file: " << filename << std::endl;
 	// Get an fstream to read in the file data.
 	std::fstream file;
@@ -99,6 +99,7 @@ int main()
 
 		std::string fileLine;
 		std::vector<std::string> vertexData;
+		float vertexPoints[8][3] = {};
 		std::vector<std::string> normalData;
 		std::vector<std::string> textureData;
 		std::vector<std::string> faceData;
@@ -127,13 +128,16 @@ int main()
 							std::stringstream iss(data);
 							Vec4 point;
 							int i = 0;
+							static int index = 0;
 
 							for (std::string val; iss >> val; ++i)
 							{
 								float fVal = std::stof(val);
 								point.i[i] = fVal;
+								vertexPoints[index][i] = fVal;
 							}
 
+							++index;
 							point.w = 1.f;
 							std::cout << "Saving vertex data.\n";
 							vertexData.push_back(fileLine);
@@ -161,19 +165,27 @@ int main()
 			}
 		}
 
+		Renderer renderer;
+
+		// Create render window.
+		if (!renderer.CreateRenderWindow())
+		{
+			// Failed to create GLFW window.
+			return -1;
+		}
+
+		GLuint vertexArrayID;
+		glGenVertexArrays(1, &vertexArrayID);
+		glBindVertexArray(vertexArrayID);
+		GLuint vertexBuffer;
+		glGenBuffers(1, &vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPoints), vertexPoints, GL_STATIC_DRAW);
+
+		renderer.UpdateWindow(&vertexBuffer);
+		glfwTerminate();
 		file.close();
 	}
 
-	Renderer renderer;
-
-	// Create render window.
-	if (!renderer.CreateRenderWindow())
-	{
-		// Failed to create GLFW window.
-		return -1;
-	}
-
-	renderer.UpdateWindow();
-	glfwTerminate();
 	return EXIT_SUCCESS;
 }

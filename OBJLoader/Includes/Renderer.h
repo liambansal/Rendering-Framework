@@ -14,7 +14,7 @@ public:
 	~Renderer();
 
 	bool CreateRenderWindow();
-	void UpdateWindow();
+	void UpdateWindow(GLuint* a_pVertexBuffer);
 
 private:
 	GLFWwindow* m_pWindow;

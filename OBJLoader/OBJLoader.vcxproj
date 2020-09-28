@@ -20,9 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Sources\glad.c" />
     <ClCompile Include="Sources\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Includes\GLAD\glad.h" />
+    <ClInclude Include="Includes\GLAD\khrplatform.h" />
+    <ClInclude Include="Includes\GLFW\glfw3.h" />
     <ClInclude Include="Includes\Renderer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
