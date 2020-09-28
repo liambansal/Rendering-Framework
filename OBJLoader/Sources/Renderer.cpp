@@ -1,5 +1,6 @@
 #include "Renderer.h" // File's header.
 #include <iostream>
+#include "Utilities.cpp"
 
 // Constructor.
 Renderer::Renderer() : m_pWindow(nullptr)
@@ -12,9 +13,10 @@ Renderer::~Renderer()
 bool Renderer::CreateRenderWindow()
 {
 	glfwInit();
-	int openGLVersion = 4;
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openGLVersion);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGLVersion);
+	unsigned int majorVersion = 4;
+	unsigned int minorVersion = 6;
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVersion);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	int windowWidth = 1024;
 	int windowHeight = 640;
@@ -32,29 +34,70 @@ bool Renderer::CreateRenderWindow()
 	}
 
 	glfwMakeContextCurrent(m_pWindow);
+
+	if (!gladLoadGL())
+	{
+		glfwDestroyWindow(m_pWindow);
+		glfwTerminate();
+		return false;
+	}
+
+	majorVersion = glfwGetWindowAttrib(m_pWindow, GLFW_CONTEXT_VERSION_MAJOR);
+	minorVersion = glfwGetWindowAttrib(m_pWindow, GLFW_CONTEXT_VERSION_MINOR);
+	unsigned int revision = glfwGetWindowAttrib(m_pWindow, GLFW_CONTEXT_REVISION);
+	// Output window attributes to inform user of OpenGL version.
+	std::cout << "OpenGL version: " << majorVersion << "." << minorVersion << "." << revision << std::endl;
 	// Sets up input to be captured from parameter window.
 	glfwSetInputMode(m_pWindow, GLFW_STICKY_KEYS, GL_TRUE);
 	return true;
 }
 
-void Renderer::UpdateWindow(GLuint* a_pVertexBuffer)
+void Renderer::UpdateWindow()
 {
+	// TODO: move code
+	// Set render window's background colour.
+	glClearColor(0.55f, 0.45f, 0.75f, 1.f);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+
+	const float vertexPositions[] =
+	{
+		0.0f, 0.5f, 0.0f,
+		1.0f, -0.5f, -0.5f,
+		0.0f, 1.0f, 0.5f,
+		-0.5f, 0.0f, 1.0f
+	};
+
+	const float vertexColours[] =
+	{
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+	};
+
+	// Create shader program.
+	GLuint uiProgram = CreateProgram();
+
 	// Loop for keeping the render window open.
 	do
 	{
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Enable shaders.
+		glUseProgram(uiProgram);
+		// Enable the vertex array state, since we're sending in an array of 
+		// vertices.
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(
-			0,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-		);
-		unsigned int verteciesToDraw = 4;
-		// Draw a quad.
-		glDrawArrays(GL_QUADS, 0, verteciesToDraw);
-		glDisableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		// Specify where our vertex array is, how many components each vertex 
+		// has, the data type of each component and whether the data is 
+		// normalised or not.
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, vertexPositions);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, vertexColours);
+		// Draw to the screen.
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
 		// Updates the buffer used to render images to the screen.
 		glfwSwapBuffers(m_pWindow);

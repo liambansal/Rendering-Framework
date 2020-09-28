@@ -24,6 +24,9 @@
     <ClCompile Include="Sources\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes\Renderer.h">
@@ -38,5 +41,16 @@
     <ClInclude Include="Includes\GLFW\glfw3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
