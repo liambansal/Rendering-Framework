@@ -42,9 +42,7 @@ void Renderer::UpdateWindow(GLuint* a_pVertexBuffer)
 	// Loop for keeping the render window open.
 	do
 	{
-		// Draw a triangle.
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, *a_pVertexBuffer);
 		glVertexAttribPointer(
 			0,
 			3,
@@ -54,7 +52,8 @@ void Renderer::UpdateWindow(GLuint* a_pVertexBuffer)
 			(void*)0
 		);
 		unsigned int verteciesToDraw = 4;
-		glDrawArrays(GL_TRIANGLES, 0, verteciesToDraw);
+		// Draw a quad.
+		glDrawArrays(GL_QUADS, 0, verteciesToDraw);
 		glDisableVertexAttribArray(0);
 		
 		// Updates the buffer used to render images to the screen.

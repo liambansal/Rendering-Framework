@@ -99,7 +99,7 @@ int main()
 
 		std::string fileLine;
 		std::vector<std::string> vertexData;
-		float vertexPoints[8][3] = {};
+		float vertices[8][3] = {};
 		std::vector<std::string> normalData;
 		std::vector<std::string> textureData;
 		std::vector<std::string> faceData;
@@ -134,7 +134,7 @@ int main()
 							{
 								float fVal = std::stof(val);
 								point.i[i] = fVal;
-								vertexPoints[index][i] = fVal;
+								vertices[index][i] = fVal;
 							}
 
 							++index;
@@ -174,15 +174,18 @@ int main()
 			return -1;
 		}
 
+		GLuint vertexBufferID;
+		// Get vertex buffer ID.
+		glGenBuffers(1, &vertexBufferID);
+		// Binds vertex buffer to the target array buffer.
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+		// Copy vertex data into the target array buffer.
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		GLuint vertexArrayID;
 		glGenVertexArrays(1, &vertexArrayID);
 		glBindVertexArray(vertexArrayID);
-		GLuint vertexBuffer;
-		glGenBuffers(1, &vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPoints), vertexPoints, GL_STATIC_DRAW);
 
-		renderer.UpdateWindow(&vertexBuffer);
+		renderer.UpdateWindow(&vertexBufferID);
 		glfwTerminate();
 		file.close();
 	}
