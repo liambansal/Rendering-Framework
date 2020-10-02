@@ -174,19 +174,7 @@ int main()
 			return -1;
 		}
 
-		//GLuint vertexBufferID;
-		//// Get vertex buffer ID.
-		//glGenBuffers(1, &vertexBufferID);
-		//// Binds vertex buffer to the target array buffer.
-		//glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		//// Copy vertex data into the target array buffer.
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		//GLuint vertexArrayID;
-		//glGenVertexArrays(1, &vertexArrayID);
-		//glBindVertexArray(vertexArrayID);
-
 		renderer.UpdateWindow();
-		glfwTerminate();
 		file.close();
 	}
 

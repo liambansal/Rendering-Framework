@@ -67,7 +67,7 @@ static GLuint CreateProgram()
 	std::vector<GLuint> shaderList;
 	shaderList.push_back(CreateShader("Resources/Shaders/vertex.glsl",
 		GL_VERTEX_SHADER));
-	shaderList.push_back(CreateShader("Resources/Shaders/fragments.glsl",
+	shaderList.push_back(CreateShader("Resources/Shaders/fragment.glsl",
 		GL_FRAGMENT_SHADER));
 	// Create shader program ID.
 	GLuint uiProgram = glCreateProgram();

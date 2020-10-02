@@ -12,12 +12,17 @@ Renderer::~Renderer()
 
 bool Renderer::CreateRenderWindow()
 {
-	glfwInit();
 	unsigned int majorVersion = 4;
 	unsigned int minorVersion = 6;
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVersion);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	if (!glfwInit())
+	{
+		return false;
+	}
+
 	int windowWidth = 1024;
 	int windowHeight = 640;
 	m_pWindow = glfwCreateWindow(windowWidth,
@@ -54,36 +59,38 @@ bool Renderer::CreateRenderWindow()
 
 void Renderer::UpdateWindow()
 {
-	// TODO: move code
-	// Set render window's background colour.
-	glClearColor(0.55f, 0.45f, 0.75f, 1.f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
 	const float vertexPositions[] =
 	{
-		0.0f, 0.5f, 0.0f,
-		1.0f, -0.5f, -0.5f,
-		0.0f, 1.0f, 0.5f,
-		-0.5f, 0.0f, 1.0f
+		0.0f, 0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.0f, 1.0f
 	};
 
 	const float vertexColours[] =
 	{
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f, 1.0f
 	};
 
 	// Create shader program.
 	GLuint uiProgram = CreateProgram();
+	// Show prompt to close render window.
+	std::cout << "Press \"Escape\" to close render window.\n";
 
 	// Loop for keeping the render window open.
 	do
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		// Set render window's background colour.
+		float redValue = 0.5f;
+		float greenValue = 0.45f;
+		float blueValue = 0.6f;
+		float alphaValue = 1.f;
+		glClearColor(redValue, greenValue, blueValue, alphaValue);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Enable shaders.
 		glUseProgram(uiProgram);
@@ -105,4 +112,6 @@ void Renderer::UpdateWindow()
 		glfwPollEvents();
 	} while (glfwGetKey(m_pWindow, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		!glfwWindowShouldClose(m_pWindow));
+
+	glfwTerminate();
 }
