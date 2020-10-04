@@ -64,16 +64,24 @@ void Renderer::UpdateWindow()
 
 	const float vertexPositions[] =
 	{
-		0.0f, 0.5f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.0f, 1.0f
+		-0.25f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.25f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 0.0f, 1.0f,
+
+		-0.5f, 0.5f, 0.0f, 1.0f,
+		0.5f, -0.25f, 0.0f, 1.0f,
+		0.25f, 0.5f, 0.0f, 1.0f
 	};
 
 	const float vertexColours[] =
 	{
 		1.0f, 0.0f, 0.0f, 1.0f,
 		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f
+		0.0f, 0.0f, 1.0f, 1.0f,
+
+		1.0f, 0.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f, 1.0f
 	};
 
 	// Create shader program.
@@ -105,6 +113,7 @@ void Renderer::UpdateWindow()
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, vertexColours);
 		// Draw to the screen.
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 3, 3);
 		
 		// Updates the buffer used to render images to the screen.
 		glfwSwapBuffers(m_pWindow);
