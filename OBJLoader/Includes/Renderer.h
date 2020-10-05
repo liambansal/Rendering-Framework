@@ -16,6 +16,11 @@ public:
 	bool CreateRenderWindow();
 	void UpdateWindow();
 
+protected:
+	const int m_windowWidth;
+	const int m_windowHeight;
+	GLuint m_uiProgram;
+
 private:
 	GLFWwindow* m_pWindow;
 };

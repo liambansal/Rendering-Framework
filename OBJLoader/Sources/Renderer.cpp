@@ -1,9 +1,13 @@
 #include "Renderer.h" // File's header.
+#include "DebugCamera.h"
 #include <iostream>
 #include "Utilities.cpp"
 
 // Constructor.
-Renderer::Renderer() : m_pWindow(nullptr)
+Renderer::Renderer() : m_windowWidth(1024),
+	m_windowHeight(640),
+	m_uiProgram(0),
+	m_pWindow(nullptr)
 {}
 
 // Destructor.
@@ -23,10 +27,8 @@ bool Renderer::CreateRenderWindow()
 		return false;
 	}
 
-	int windowWidth = 1024;
-	int windowHeight = 640;
-	m_pWindow = glfwCreateWindow(windowWidth,
-		windowHeight,
+	m_pWindow = glfwCreateWindow(m_windowWidth,
+		m_windowHeight,
 		"OpenGL OBJLoader",
 		NULL,
 		NULL);
@@ -85,13 +87,18 @@ void Renderer::UpdateWindow()
 	};
 
 	// Create shader program.
-	GLuint uiProgram = CreateProgram();
+	m_uiProgram = CreateProgram();
 	// Show prompt to close render window.
 	std::cout << "Press \"Escape\" to close render window.\n";
+	DebugCamera debugCamera;
 
 	// Loop for keeping the render window open.
 	do
 	{
+		const float fixedDeltaTime = 0.016f;
+		const float cameraSpeed = 2.0f;
+		debugCamera.FreeMovement(fixedDeltaTime, cameraSpeed);
+
 		// Set render window's background colour.
 		float redValue = 0.5f;
 		float greenValue = 0.45f;
@@ -101,7 +108,7 @@ void Renderer::UpdateWindow()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Enable shaders.
-		glUseProgram(uiProgram);
+		glUseProgram(m_uiProgram);
 		// Enable the vertex array state, since we're sending in an array of 
 		// vertices.
 		glEnableVertexAttribArray(0);
