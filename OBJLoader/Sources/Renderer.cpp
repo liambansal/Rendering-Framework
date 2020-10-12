@@ -90,14 +90,14 @@ void Renderer::UpdateWindow()
 	m_uiProgram = CreateProgram();
 	// Show prompt to close render window.
 	std::cout << "Press \"Escape\" to close render window.\n";
-	DebugCamera debugCamera;
+	//DebugCamera debugCamera;
 
 	// Loop for keeping the render window open.
 	do
 	{
 		const float fixedDeltaTime = 0.016f;
 		const float cameraSpeed = 2.0f;
-		debugCamera.FreeMovement(fixedDeltaTime, cameraSpeed);
+		//debugCamera.FreeMovement(fixedDeltaTime, cameraSpeed);
 
 		// Set render window's background colour.
 		float redValue = 0.5f;
@@ -120,7 +120,7 @@ void Renderer::UpdateWindow()
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, vertexColours);
 		// Draw to the screen.
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawArrays(GL_TRIANGLES, 3, 3);
+		//glDrawArrays(GL_TRIANGLES, 3, 3);
 		
 		// Updates the buffer used to render images to the screen.
 		glfwSwapBuffers(m_pWindow);

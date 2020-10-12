@@ -1,7 +1,7 @@
 #ifndef DEBUG_CAMERA_H
 #define DEBUG_CAMERA_H
 
-#include "glm/glm.hpp"
+#include "GLM/glm.hpp"
 #include "Renderer.h"
 
 class DebugCamera : public Renderer

@@ -1,8 +1,42 @@
-#include <vector>
-#include <string>
+#include "Utilities.h" // File's header.
 #include <fstream>
 #include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
+#include "GLM/glm.hpp"
+#include "GLM/ext.hpp"
+#include <iostream>
+#include <string>
+#include <vector>
+
+static double s_previousTime = 0;
+static float s_totalTime = 0;
+static float s_deltaTime = 0;
+
+void Utilities::ResetTimer()
+{
+	s_previousTime = glfwGetTime();
+	s_totalTime = 0;
+	s_deltaTime = 0;
+}
+
+float Utilities::TickTimer()
+{
+	double currentTime = glfwGetTime();
+	s_deltaTime = (float)(currentTime - s_previousTime);
+	s_totalTime += s_deltaTime;
+	s_previousTime = currentTime;
+	return s_deltaTime;
+}
+
+float Utilities::GetDeltaTime()
+{
+	return s_deltaTime;
+}
+
+float Utilities::GetTotalTime()
+{
+	return s_totalTime;
+}
 
 static GLuint CreateShader(const char* a_strShaderFile, unsigned int a_eShaderType)
 {

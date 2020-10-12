@@ -23,6 +23,7 @@
     <ClCompile Include="Sources\glad.c" />
     <ClCompile Include="Sources\Main.cpp" />
     <ClCompile Include="Sources\Renderer.cpp" />
+    <ClCompile Include="Sources\ShaderUtilities.cpp" />
     <ClCompile Include="Sources\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="Includes\GLAD\khrplatform.h" />
     <ClInclude Include="Includes\GLFW\glfw3.h" />
     <ClInclude Include="Includes\Renderer.h" />
+    <ClInclude Include="Includes\ShaderUtilities.h" />
     <ClInclude Include="Includes\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
@@ -105,7 +107,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir)Includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ProjectDir)Libraries/glm/$(Configuration);$(ProjectDir)Libraries;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>$(ProjectDir)Libraries/GLM/$(Configuration);$(ProjectDir)Libraries;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
     <OutDir>$(SoltionDir)bin\</OutDir>
     <IntDir>$(ProjectDir)obj\</IntDir>

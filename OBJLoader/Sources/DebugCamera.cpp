@@ -1,18 +1,17 @@
 #include "DebugCamera.h" // File's header.
 #include "GLFW/glfw3.h"
-#include "glm/ext.hpp"
+#include "GLM/ext.hpp"
 
-DebugCamera::DebugCamera()
-{
-	m_cameraMatrix = glm::inverse(
-		glm::lookAt(glm::vec3(10, 10, 10),
-			glm::vec3(0, 0, 0),
-			glm::vec3(0, 1, 0)));
-	m_projectionMatrix = glm::perspective(
+DebugCamera::DebugCamera() : m_cameraMatrix(glm::inverse(
+	glm::lookAt(glm::vec3(10, 10, 10),
+		glm::vec3(0, 0, 0),
+		glm::vec3(0, 1, 0)))),
+	m_projectionMatrix(glm::perspective(
 		glm::pi<float>() * 0.25f,
 		m_windowWidth / (float)m_windowHeight,
 		0.1f,
-		1000.0f);
+		1000.0f))
+{
 	// Send the projection matrix to the vertex shader.
 	// Ask the shader program for the location of the projection-view-
 	// matrix uniform variable.

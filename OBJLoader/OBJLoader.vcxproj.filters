@@ -21,18 +21,24 @@
     <ClCompile Include="Sources\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Utilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\DebugCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\ShaderUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\DebugCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Includes\GLAD\glad.h">
@@ -44,10 +50,10 @@
     <ClInclude Include="Includes\GLFW\glfw3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\Utilities.h">
+    <ClInclude Include="Includes\ShaderUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\DebugCamera.h">
+    <ClInclude Include="Includes\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
