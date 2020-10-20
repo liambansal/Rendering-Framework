@@ -17,6 +17,8 @@ public:
 	void FreeMovement(float a_deltaTime,
 		float a_speed
 		/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/);
+	void UpdateProjectionView();
+	void SendShaderData();
 
 private:
 	// World space matrix for the camera.

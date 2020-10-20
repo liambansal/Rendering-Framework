@@ -10,18 +10,9 @@ DebugCamera::DebugCamera() : m_cameraMatrix(glm::inverse(
 		glm::pi<float>() * 0.25f,
 		m_windowWidth / (float)m_windowHeight,
 		0.1f,
-		1000.0f))
-{
-	// Send the projection matrix to the vertex shader.
-	// Ask the shader program for the location of the projection-view-
-	// matrix uniform variable.
-	int projectionViewUniformLocation = glGetUniformLocation(m_uiProgram, "projectionViewMatrix");
-	// Send this location a pointer to our glm::mat4 (send across float data).
-	glUniformMatrix4fv(projectionViewUniformLocation,
-		1,
-		false,
-		glm::value_ptr(m_projectionViewMatrix));
-}
+		1000.0f)),
+	m_projectionViewMatrix(NULL)
+{}
 
 DebugCamera::~DebugCamera()
 {}
@@ -49,7 +40,7 @@ void DebugCamera::FreeMovement(float a_deltaTime,
 	// Moves the camera forward.
 	if (glfwGetKey(window, 'W') == GLFW_PRESS)
 	{
-		vTranslation += vForward * frameSpeed;
+		vTranslation -= vForward * frameSpeed;
 	}
 
 	// Moves the camera left.
@@ -61,7 +52,7 @@ void DebugCamera::FreeMovement(float a_deltaTime,
 	// Moves the camera back.
 	if (glfwGetKey(window, 'S') == GLFW_PRESS)
 	{
-		vTranslation -= vForward * frameSpeed;
+		vTranslation += vForward * frameSpeed;
 	}
 
 	// Moves the camera right.
@@ -73,13 +64,13 @@ void DebugCamera::FreeMovement(float a_deltaTime,
 	// Moves the camera up.
 	if (glfwGetKey(window, 'Q') == GLFW_PRESS)
 	{
-		vTranslation += vUp * frameSpeed;
+		vTranslation -= vUp * frameSpeed;
 	}
 
 	// Moves the camera down.
 	if (glfwGetKey(window, 'E') == GLFW_PRESS)
 	{
-		vTranslation -= vUp * frameSpeed;
+		vTranslation += vUp * frameSpeed;
 	}
 
 	// Set the translation to the camera matrix that has been passed in.
@@ -127,7 +118,25 @@ void DebugCamera::FreeMovement(float a_deltaTime,
 	{
 		sbMouseButtonDown = false;
 	}
+}
 
+void DebugCamera::UpdateProjectionView()
+{
+	// Send the projection matrix to the vertex shader.
+	// Ask the shader program for the location of the projection-view-
+	// matrix uniform variable.
+	// TODO: test if this is still -1 when placed in the Renderer loop.
+	int projectionViewUniformLocation = glGetUniformLocation(Renderer::m_uiProgram, "projectionViewMatrix");
+	// TODO: use "projectionViewUniformLocation" instead of passing "0" as arguement.
+	// Send this location a pointer to our glm::mat4 (send across float data).
+	glUniformMatrix4fv(0,
+		1,
+		false,
+		glm::value_ptr(m_projectionViewMatrix));
+}
+
+void DebugCamera::SendShaderData()
+{
 	glm::mat4 viewMatrix = glm::inverse(m_cameraMatrix);
 	m_projectionViewMatrix = m_projectionMatrix * viewMatrix;
 }

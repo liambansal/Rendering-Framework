@@ -1,9 +1,5 @@
 #include "Utilities.h" // File's header.
 #include <fstream>
-#include "GLAD/glad.h"
-#include "GLFW/glfw3.h"
-#include "GLM/glm.hpp"
-#include "GLM/ext.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -12,38 +8,12 @@ static double s_previousTime = 0;
 static float s_totalTime = 0;
 static float s_deltaTime = 0;
 
-void Utilities::ResetTimer()
-{
-	s_previousTime = glfwGetTime();
-	s_totalTime = 0;
-	s_deltaTime = 0;
-}
-
-float Utilities::TickTimer()
-{
-	double currentTime = glfwGetTime();
-	s_deltaTime = (float)(currentTime - s_previousTime);
-	s_totalTime += s_deltaTime;
-	s_previousTime = currentTime;
-	return s_deltaTime;
-}
-
-float Utilities::GetDeltaTime()
-{
-	return s_deltaTime;
-}
-
-float Utilities::GetTotalTime()
-{
-	return s_totalTime;
-}
-
-static GLuint CreateShader(const char* a_strShaderFile, unsigned int a_eShaderType)
+GLuint Utilities::CreateShader(const char* a_strShaderFile, unsigned int a_eShaderType)
 {
 	std::string strShaderCode;
 	// Open shader file.
 	std::ifstream shaderStream(a_strShaderFile);
-	
+
 	// If that worked okay, load file in line by line.
 	if (shaderStream.is_open())
 	{
@@ -76,7 +46,7 @@ static GLuint CreateShader(const char* a_strShaderFile, unsigned int a_eShaderTy
 		GLchar* strInfoLog = new GLchar[infoLogLength];
 		glGetShaderInfoLog(uiShader, infoLogLength, NULL, strInfoLog);
 		const char* strShaderType = NULL;
-		
+
 		switch (a_eShaderType)
 		{
 		case GL_VERTEX_SHADER:
@@ -96,7 +66,7 @@ static GLuint CreateShader(const char* a_strShaderFile, unsigned int a_eShaderTy
 	return uiShader;
 }
 
-static GLuint CreateProgram()
+GLuint Utilities::CreateProgram()
 {
 	std::vector<GLuint> shaderList;
 	shaderList.push_back(CreateShader("Resources/Shaders/vertex.glsl",
@@ -135,4 +105,71 @@ static GLuint CreateProgram()
 	}
 
 	return uiProgram;
+}
+
+void Utilities::ResetTimer()
+{
+	s_previousTime = glfwGetTime();
+	s_totalTime = 0;
+	s_deltaTime = 0;
+}
+
+float Utilities::TickTimer()
+{
+	double currentTime = glfwGetTime();
+	s_deltaTime = (float)(currentTime - s_previousTime);
+	s_totalTime += s_deltaTime;
+	s_previousTime = currentTime;
+	return s_deltaTime;
+}
+
+float Utilities::GetDeltaTime()
+{
+	return s_deltaTime;
+}
+
+float Utilities::GetTotalTime()
+{
+	return s_totalTime;
+}
+
+char* Utilities::fileToBuffer(const char* a_sPath)
+{
+	// Get an fstream to read in the file data.
+	std::fstream file;
+	file.open(a_sPath, std::ios_base::in | std::ios_base::binary);
+
+	// Test to see if the file has opened correctly.
+	if (file.is_open())
+	{
+		// Success. File has been opened, verify contents of file.
+		// Attmempt to read the highest number of bytes from the file.
+		file.ignore(std::numeric_limits<std::streamsize>::max());
+		// gCount will have reached end of file marker, letting us know the 
+		// number of bytes.
+		std::streamsize fileSize = file.gcount();
+		// Clear end of file marker from being read.
+		file.clear();
+		// Seek back to the beginning of the file.
+		file.seekg(0, std::ios_base::beg);
+
+		// If our file has no data close the file and return early.
+		if (fileSize == 0)
+		{
+			file.close();
+			return nullptr;
+		}
+
+		// Create a char buffer large enough to hold the entire file.
+		char* dataBuffer = new char[fileSize + 1];
+		// Ensure the contents of the buffer are cleared.
+		memset(dataBuffer, 0, fileSize + 1);
+		// Fill the buffer with the contents of the file.
+		file.read(dataBuffer, fileSize);
+		// Close the file.
+		file.close();
+		return dataBuffer;
+	}
+
+	return nullptr;
 }
