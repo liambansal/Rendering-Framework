@@ -1,3 +1,0 @@
-﻿  Main.cpp
-C:\Users\s1902869\rendering-framework-assessment-liambansal\OBJLoader\Sources\Main.cpp(25,2): warning C4091: 'typedef ': ignored on left of 'Vec4' when no variable is declared
-  OBJLoader.vcxproj -> C:\Users\s1902869\rendering-framework-assessment-liambansal\OBJLoader\Debug\OBJLoader.exe

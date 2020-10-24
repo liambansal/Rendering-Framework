@@ -1,0 +1,39 @@
+#ifndef SHADER_UTILITIES_H
+#define SHADER_UTILITIES_H
+
+// Includes.
+#include <vector>
+
+// Class implements a singleton design pattern.
+class ShaderUtilities
+{
+public:
+	static ShaderUtilities* CreateInstance();
+	static ShaderUtilities* GetInstance();
+	static void DestroyInstance();
+	static unsigned int LoadShader(const char* a_filename,
+		unsigned int a_type);
+	static void DeleteShader(unsigned int a_shaderID);
+	static unsigned int CreateProgram(const int& a_vertexShader,
+		const int& a_fragmentShader);
+	static void DeleteProgram(unsigned int a_program);
+
+private:
+	// Constructor.
+	ShaderUtilities();
+	// Destructor.
+	~ShaderUtilities();
+
+	unsigned int LoadShaderInternal(const char* a_filename,
+		unsigned int a_type);
+	void DeleteShaderInternal(unsigned int a_shaderID);
+	unsigned int CreateProgramInternal(const int& a_vertexShader,
+		const int& a_fragmentShader);
+	void DeleteProgramInternal(unsigned int a_program);
+
+	static ShaderUtilities* m_instance;
+	std::vector<unsigned int> m_shaders;
+	std::vector<unsigned int> m_programs;
+};
+
+#endif // SHADER_UTILITIES_H.
