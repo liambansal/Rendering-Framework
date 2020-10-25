@@ -8,7 +8,7 @@ class DebugCamera : public Renderer
 {
 public:
 	// Constructor.
-	DebugCamera();
+	DebugCamera(Renderer* a_parentRenderer);
 	// Destructor.
 	~DebugCamera();
 
@@ -25,6 +25,7 @@ private:
 	glm::mat4 m_cameraMatrix;
 	glm::mat4 m_projectionMatrix;
 	glm::mat4 m_projectionViewMatrix;
+	Renderer* m_pParentRenderer;
 };
 
 #endif // DEBUG_CAMERA_H.

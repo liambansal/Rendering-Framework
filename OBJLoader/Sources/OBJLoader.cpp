@@ -143,7 +143,6 @@ bool OBJModel::Load(const char* a_filename)
 
 					if (dataType == "v") // Data is a vector.
 					{
-						std::cout << "Saving vertex data.\n";
 						glm::vec4 vertex = ProcessVectorString(data);
 						// As this is positional data ensure the w component 
 						// is set to 1.0f;
@@ -154,7 +153,6 @@ bool OBJModel::Load(const char* a_filename)
 
 					if (dataType == "vt") // Data is a UV coordinate.
 					{
-						std::cout << "Saving UV coordinate data.\n";
 						glm::vec4 uvCoordinateV4 = ProcessVectorString(data);
 						glm::vec2 uvCoordinate =
 							glm::vec2(uvCoordinateV4.x, uvCoordinateV4.y);
@@ -164,7 +162,6 @@ bool OBJModel::Load(const char* a_filename)
 
 					if (dataType == "vn") // Data is a normal.
 					{
-						std::cout << "Saving normal data.\n";
 						glm::vec4 normal = ProcessVectorString(data);
 						normal.w = 0.f;
 						normalData.push_back(normal);
@@ -173,8 +170,6 @@ bool OBJModel::Load(const char* a_filename)
 
 					if (dataType == "f") // Data is a face.
 					{
-						std::cout << "Saving face data.\n";
-						
 						// We have entered processing faces without having 
 						// hit a 'o' or 'g' tag.
 						if (currentMesh == nullptr)

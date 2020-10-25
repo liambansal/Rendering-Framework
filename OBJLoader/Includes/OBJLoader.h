@@ -1,6 +1,7 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 
+// Includes.
 #include <GLM/glm.hpp>
 #include <vector>
 #include <string>
@@ -97,7 +98,7 @@ public:
 	const char* GetFilePath() const;
 	unsigned int GetMeshCount() const;
 	const glm::mat4& GetWorldMatrix() const;
-	OBJMesh* GetMeshByName(const char* a_name);
+	//OBJMesh* GetMeshByName(const char* a_name);
 	OBJMesh* GetMeshByIndex(unsigned int a_index);
 
 private:

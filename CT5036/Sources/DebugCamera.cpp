@@ -1,19 +1,20 @@
 #include "DebugCamera.h" // File's header.
-#include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
 #include "glm/ext.hpp"
 
-DebugCamera::DebugCamera() : m_cameraMatrix(glm::inverse(
+DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_pParentRenderer(a_parentRenderer),
+	m_cameraMatrix(glm::inverse(
 		glm::lookAt(glm::vec3(10, 10, 10),
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0)))),
-	m_projectionMatrix(glm::perspective(
-		glm::pi<float>() * 0.25f,
-		(float)1080 / (float)1920,
-		0.1f,
-		1000.0f)),
 	m_projectionViewMatrix(NULL)
-{}
+{
+	m_projectionMatrix = glm::perspective(
+		glm::pi<float>() * 0.25f,
+		(float)m_pParentRenderer->GetWindowWidth() / (float)m_pParentRenderer->GetWindowHeight(),
+		0.1f,
+		1000.0f);
+}
 
 DebugCamera::~DebugCamera()
 {}
@@ -31,7 +32,7 @@ void DebugCamera::FreeMovement(float a_deltaTime,
 	glm::vec4 vRight = m_cameraMatrix[0];
 	glm::vec4 vUp = m_cameraMatrix[1];
 	glm::vec4 vTranslation = m_cameraMatrix[3];
-	const float speedMultiplier = 2.0f;
+	const float speedMultiplier = 50.0f;
 	// Test to see if the left shift key is pressed. We will use left shift to 
 	// the speed of the camera movement.
 	float frameSpeed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ?
@@ -126,7 +127,7 @@ void DebugCamera::UpdateProjectionView()
 	// Send the projection matrix to the vertex shader.
 	// Ask the shader program for the location of the projection-view-
 	// matrix uniform variable.
-	int projectionViewUniformLocation = glGetUniformLocation(3, "projectionViewMatrix");
+	int projectionViewUniformLocation = glGetUniformLocation(m_pParentRenderer->GetProgram(), "projectionViewMatrix");
 	// Send this location a pointer to our glm::mat4 (send across float data).
 	glUniformMatrix4fv(projectionViewUniformLocation,
 		1,
