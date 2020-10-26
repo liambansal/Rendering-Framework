@@ -91,7 +91,7 @@
     <IncludePath>$(SolutionDir)CT5036/Includes;$(ProjectDir)Includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)CT5036/Libraries;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
-    <OutDir>$(ProjectDir)Libraries\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)Libraries\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

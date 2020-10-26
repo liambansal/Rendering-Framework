@@ -74,7 +74,7 @@
     <OutDir>$(SoltionDir)CT5036/bin\</OutDir>
     <IntDir>$(ProjectDir)obj\</IntDir>
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
-    <LibraryPath>$(SolutionDir)OBJLoader/Libraries;$(SolutionDir)OBJLoader/Libraries/Debug;$(ProjectDir)Libraries;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>$(SolutionDir)OBJLoader/Libraries;$(ProjectDir)Libraries;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <IncludePath>$(SolutionDir)OBJLoader/Includes;$(ProjectDir)Includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

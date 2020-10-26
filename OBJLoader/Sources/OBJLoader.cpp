@@ -33,6 +33,34 @@ const glm::vec2 OBJVertex::GetUVCoordinate() const
 	return m_uvCoordinate;
 }
 
+// Calculates the face normal for a set of vertex indices.
+glm::vec4 OBJMesh::CalculateFaceNormal(const unsigned int& a_indexA,
+	const unsigned int& a_indexB,
+	const unsigned int& a_indexC) const
+{
+	glm::vec3 a = m_vertices[a_indexA].GetPosition();
+	glm::vec3 b = m_vertices[a_indexB].GetPosition();
+	glm::vec3 c = m_vertices[a_indexC].GetPosition();
+	glm::vec3 ab = glm::normalize(b - a);
+	glm::vec3 ac = glm::normalize(c - a);
+	return glm::vec4(glm::cross(ab, ac), 0.f);
+}
+
+// Cycles through a model and generates its faces' normals.
+void OBJMesh::CalculateFaceNormals()
+{
+	// As our indexed triangle array contains a tri for each three points we 
+	// can iterate through this vector and calculate a face normal.
+	for (int i = 0; i < m_indices.size(); i += 3)
+	{
+		glm::vec4 normal = CalculateFaceNormal(i, i + 1, i + 2);
+		// Set face normal to each vertex for the tri.
+		m_vertices[i].SetNormal(normal);
+		m_vertices[i + 1].SetNormal(normal);
+		m_vertices[i + 2].SetNormal(normal);
+	}
+}
+
 void OBJMesh::SetName(std::string a_name)
 {
 	m_name = a_name;
@@ -144,6 +172,8 @@ bool OBJModel::Load(const char* a_filename)
 					if (dataType == "v") // Data is a vector.
 					{
 						glm::vec4 vertex = ProcessVectorString(data);
+						// Multiply by passed in vector to allow scaling of the model.
+						vertex *= m_modelScale;
 						// As this is positional data ensure the w component 
 						// is set to 1.0f;
 						vertex.w = 1.f;
@@ -207,13 +237,27 @@ bool OBJModel::Load(const char* a_filename)
 							currentMesh->GetVertices()->push_back(currentVertex);
 						}
 
-						// All face information for the tri/quad/fan have been 
-						// collected. Time to index these into the current mesh.
+						bool calculateNormals = normalData.empty();
+
+						// All face information for the tri/quad/fan have been collected.
+						// Time to index these into the current mesh.
 						for (unsigned int offset = 1; offset < (faceData.size() - 1); ++offset)
 						{
 							currentMesh->GetIndices()->push_back(ci);
 							currentMesh->GetIndices()->push_back(ci + offset);
-							currentMesh->GetIndices()->push_back(ci + 1 + offset);
+							currentMesh->GetIndices()->push_back(ci + offset + 1);
+
+							// Test to see if the OBJ file contains normal data, 
+							// if normalData is empty then there are no normals.
+							if (calculateNormals)
+							{
+								glm::vec4 normal = currentMesh->CalculateFaceNormal(ci,
+									ci + offset,
+									ci + offset + 1);
+								(*currentMesh->GetVertices())[ci].SetNormal(normal);
+								(*currentMesh->GetVertices())[ci + offset].SetNormal(normal);
+								(*currentMesh->GetVertices())[ci + offset + 1].SetNormal(normal);
+							}
 						}
 
 						continue;

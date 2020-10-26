@@ -3,6 +3,8 @@
 #include "glm/ext.hpp"
 
 DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_pParentRenderer(a_parentRenderer),
+	m_fCameraSpeed(5.0f),
+	m_fSpeedMultiplier(25.0f),
 	m_cameraMatrix(glm::inverse(
 		glm::lookAt(glm::vec3(10, 10, 10),
 		glm::vec3(0, 0, 0),
@@ -21,8 +23,7 @@ DebugCamera::~DebugCamera()
 
 // Utility for mouse/keyboard movement of a matrix transform (suitable for 
 // camera).
-void DebugCamera::FreeMovement(float a_deltaTime,
-	float a_speed
+void DebugCamera::FreeMovement(float a_deltaTime
 	/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/)
 {
 	// Get the current window context.
@@ -32,11 +33,10 @@ void DebugCamera::FreeMovement(float a_deltaTime,
 	glm::vec4 vRight = m_cameraMatrix[0];
 	glm::vec4 vUp = m_cameraMatrix[1];
 	glm::vec4 vTranslation = m_cameraMatrix[3];
-	const float speedMultiplier = 50.0f;
 	// Test to see if the left shift key is pressed. We will use left shift to 
 	// the speed of the camera movement.
 	float frameSpeed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ?
-		a_deltaTime * a_speed * speedMultiplier : a_deltaTime * a_speed;
+		a_deltaTime * m_fCameraSpeed * m_fSpeedMultiplier : a_deltaTime * m_fCameraSpeed;
 
 	// Translate camera.
 	// Moves the camera forward.

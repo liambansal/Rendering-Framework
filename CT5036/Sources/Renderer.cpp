@@ -38,7 +38,7 @@ bool Renderer::OnCreate()
 {
 	m_pOBJModel = new OBJModel();
 
-	if (m_pOBJModel->Load("Resources/obj_models/D0208009.obj"))
+	if (m_pOBJModel->Load("Resources/obj_models/C1102056.obj"))
 	{
 		// Setup shaders for OBJ model rendering.
 		// Create OBJ shader program.
@@ -106,8 +106,7 @@ bool Renderer::OnCreate()
 
 void Renderer::Update(float a_deltaTime)
 {
-	const float cameraSpeed = 2.0f;
-	m_pDebugCamera->FreeMovement(a_deltaTime, cameraSpeed);
+	m_pDebugCamera->FreeMovement(a_deltaTime);
 }
 
 void Renderer::Draw()

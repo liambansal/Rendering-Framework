@@ -14,13 +14,14 @@ public:
 
 	// Utility for mouse/keyboard movement of a matrix transform (suitable for
 	// camera).
-	void FreeMovement(float a_deltaTime,
-		float a_speed
+	void FreeMovement(float a_deltaTime
 		/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/);
 	void UpdateProjectionView();
 	void SendShaderData();
 
 private:
+	const float m_fCameraSpeed;
+	const float m_fSpeedMultiplier;
 	// World space matrix for the camera.
 	glm::mat4 m_cameraMatrix;
 	glm::mat4 m_projectionMatrix;

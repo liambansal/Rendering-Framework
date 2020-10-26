@@ -45,7 +45,9 @@ private:
 	glm::vec2 m_uvCoordinate;
 };
 
-inline OBJVertex::OBJVertex() : m_position(0, 0, 0, 1), m_normal(0, 0, 0, 0), m_uvCoordinate(0, 0)
+inline OBJVertex::OBJVertex() : m_position(0, 0, 0, 1),
+	m_normal(0, 0, 0, 0),
+	m_uvCoordinate(0, 0)
 {}
 
 inline OBJVertex::~OBJVertex()
@@ -67,6 +69,12 @@ public:
 	OBJMesh();
 	~OBJMesh();
 
+	// Calculates the face normal for a set of vertex indices.
+	glm::vec4 CalculateFaceNormal(const unsigned int& a_indexA,
+		const unsigned int& a_indexB,
+		const unsigned int& a_indexC) const;
+	// Cycles through a model and generates its faces' normals.
+	void CalculateFaceNormals();
 	void SetName(std::string a_name);
 	void SetVertices(std::vector<OBJVertex> a_vertices);
 	void SetIndices(std::vector<unsigned int> a_indices);
@@ -116,12 +124,14 @@ private:
 
 	OBJFaceTriplet ProcessTriplet(std::string a_triplet);
 
+	float m_modelScale;
 	std::vector<OBJMesh*> m_meshes;
 	std::string m_filePath;
 	glm::mat4 m_worldMatrix;
 };
 
-inline OBJModel::OBJModel() : m_meshes(),
+inline OBJModel::OBJModel() : m_modelScale(0.1f),
+	m_meshes(),
 	m_filePath(),
 	m_worldMatrix(glm::mat4(0.f))
 {
