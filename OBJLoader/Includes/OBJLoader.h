@@ -63,6 +63,42 @@ inline bool OBJVertex::operator < (const OBJVertex& a_rhs) const
 	return memcmp(this, &a_rhs, sizeof(OBJVertex)) < 0;
 }
 
+// Materials have properties such as lights, textures and roughness.
+class OBJMaterial
+{
+public:
+	OBJMaterial();
+	~OBJMaterial();
+
+	void SetName(std::string a_name);
+	// Sets the ambient light colour.
+	void SetKA(glm::vec4 a_kA);
+	// Sets the diffuse light colour.
+	void SetKD(glm::vec4 a_kD);
+	// Sets the specular light colour.
+	void SetKS(glm::vec4 a_kS);
+	const std::string GetName() const;
+	// Gets the ambient light colour.
+	glm::vec4* GetKA();
+	// Gets the diffuse light colour.
+	glm::vec4* GetKD();
+	// Gets the specular light colour.
+	glm::vec4* GetKS();
+
+private:
+	std::string m_name;
+	// Colour and illumination variables.
+	// Ambient Light Colour - alpha componenet stores Optical Density (Ni)
+	// (Refraction Index 0.001 - 10).
+	glm::vec4 m_kA;
+	// Diffuse Light Colour - alpha component stores dissolve (d)(0 - 1).
+	glm::vec4 m_kD;
+	// Specular Light Colour (exponent stored in alpha).
+	glm::vec4 m_kS;
+};
+
+// An OBJ Model can be composed of many meshes. Much like any 3D model.
+// Use a class to store individual mesh data.
 class OBJMesh
 {
 public:
@@ -78,14 +114,17 @@ public:
 	void SetName(std::string a_name);
 	void SetVertices(std::vector<OBJVertex> a_vertices);
 	void SetIndices(std::vector<unsigned int> a_indices);
+	void SetMaterial(OBJMaterial* a_material);
 	const std::string GetName() const;
 	std::vector<OBJVertex>* GetVertices();
 	std::vector<unsigned int>* GetIndices();
+	OBJMaterial* GetMaterial();
 
 private:
 	std::string m_name;
 	std::vector<OBJVertex> m_vertices;
 	std::vector<unsigned int> m_indices;
+	OBJMaterial* m_pMaterial;
 };
 
 inline OBJMesh::OBJMesh()
@@ -108,12 +147,15 @@ public:
 	const glm::mat4& GetWorldMatrix() const;
 	//OBJMesh* GetMeshByName(const char* a_name);
 	OBJMesh* GetMeshByIndex(unsigned int a_index);
+	OBJMaterial* GetMaterialByName(const char* a_name);
+	OBJMaterial* GetMaterialByIndex(unsigned int a_index);
 
 private:
 	std::string LineType(const std::string& a_in);
 	std::string LineData(const std::string& a_in);
 	glm::vec4 ProcessVectorString(const std::string a_data);
 	std::vector<std::string> SplitStringAtCharacter(std::string a_data, char a_character);
+	void LoadMaterialLibrary(std::string a_mtllib);
 
 	typedef struct OBJFaceTriplet
 	{
@@ -125,18 +167,19 @@ private:
 	OBJFaceTriplet ProcessTriplet(std::string a_triplet);
 
 	float m_modelScale;
+	OBJMaterial* m_pCurrentMaterial;
 	std::vector<OBJMesh*> m_meshes;
+	std::vector<OBJMaterial*> m_materials;
 	std::string m_filePath;
 	glm::mat4 m_worldMatrix;
 };
 
-inline OBJModel::OBJModel() : m_modelScale(0.1f),
+inline OBJModel::OBJModel() : m_modelScale(0.5f),
+	m_pCurrentMaterial(nullptr),
 	m_meshes(),
 	m_filePath(),
 	m_worldMatrix(glm::mat4(0.f))
-{
-
-}
+{}
 
 inline OBJModel::~OBJModel()
 {

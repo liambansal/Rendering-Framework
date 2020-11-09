@@ -64,16 +64,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\fragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\vertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Resources\Shaders\obj_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Resources\Shaders\obj_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

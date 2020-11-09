@@ -4,7 +4,7 @@
 // Includes.
 #include "Application.h"
 #include "GLAD/glad.h"
-#include "glm/glm.hpp"
+#include "GLM/glm.hpp"
 
 // Forward Declarations.
 class DebugCamera;
@@ -21,6 +21,7 @@ public:
 	const unsigned int GetWindowWidth() const;
 	const unsigned int GetWindowHeight() const;
 	const GLuint GetProgram() const;
+	const OBJModel* GetModel() const;
 
 protected:
 	virtual bool OnCreate();

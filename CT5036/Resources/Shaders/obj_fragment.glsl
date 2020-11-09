@@ -1,12 +1,36 @@
 #version 460
+
+smooth in vec4 vertexPosition;
 smooth in vec4 vertexColour;
 smooth in vec4 vertexNormal;
+
 out vec4 outputColour;
+
+uniform vec4 cameraPosition;
+uniform vec4 kA;
+uniform vec4 kD;
+uniform vec4 kS;
+
+vec3 iA = vec3(0.25f, 0.25f, 0.25f);
+vec3 iD = vec3(1.f, 1.f, 1.f);
+vec3 iS = vec3(1.f, 1.f, 1.f);
+
+vec4 lightDirection = normalize(vec4(0.f) - vec4(10.f, 8.f, 10.f, 0.f));
 
 void main()
 {
-	vec4 lightDirection = normalize(vec4(0.f) - vec4(10.f, 8.f, 10.f, 0.f));
+	vec3 ambientLight = kA.xyz * iA;
+	
 	float negativeLightDirection = max(0.f, dot(normalize(vertexNormal), -lightDirection));
-	vec4 litColour = vec4(vertexColour.xyz * negativeLightDirection, 1.0);
-	outputColour = vertexColour + litColour;
+	vec3 diffuse = kD.xyz * iD * negativeLightDirection;
+
+	// Reflected light vector.
+	vec3 R = reflect(lightDirection, normalize(vertexNormal)).xyz;
+	// Surface to eye vector.
+	vec3 E = normalize(cameraPosition - vertexPosition).xyz;
+
+	float specularTerm = pow(max(0.f, dot(E, R)), kS.a);
+	vec3 specular = kS.xyz * iS * specularTerm;
+
+	outputColour = vec4(ambientLight + diffuse + specular, 1.f);
 }

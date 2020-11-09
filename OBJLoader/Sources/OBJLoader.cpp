@@ -33,6 +33,60 @@ const glm::vec2 OBJVertex::GetUVCoordinate() const
 	return m_uvCoordinate;
 }
 
+OBJMaterial::OBJMaterial() : m_kA(),
+	m_kD(),
+	m_kS()
+{}
+
+OBJMaterial::~OBJMaterial()
+{}
+
+void OBJMaterial::SetName(std::string a_name)
+{
+	m_name = a_name;
+}
+
+// Sets the ambient light colour.
+void OBJMaterial::SetKA(glm::vec4 a_kA)
+{
+	m_kA = a_kA;
+}
+
+// Sets the diffuse light colour.
+void OBJMaterial::SetKD(glm::vec4 a_kD)
+{
+	m_kD = a_kD;
+}
+
+// Sets the specular light colour.
+void OBJMaterial::SetKS(glm::vec4 a_kS)
+{
+	m_kS = a_kS;
+}
+
+const std::string OBJMaterial::GetName() const
+{
+	return m_name;
+}
+
+// Returns the ambient light colour.
+glm::vec4* OBJMaterial::GetKA()
+{
+	return &m_kA;
+}
+
+// Returns the diffuse light colour.
+glm::vec4* OBJMaterial::GetKD()
+{
+	return &m_kD;
+}
+
+// Returns the specular light colour.
+glm::vec4* OBJMaterial::GetKS()
+{
+	return &m_kS;
+}
+
 // Calculates the face normal for a set of vertex indices.
 glm::vec4 OBJMesh::CalculateFaceNormal(const unsigned int& a_indexA,
 	const unsigned int& a_indexB,
@@ -76,6 +130,11 @@ void OBJMesh::SetIndices(std::vector<unsigned int> a_indices)
 	m_indices = a_indices;
 }
 
+void OBJMesh::SetMaterial(OBJMaterial* a_material)
+{
+	m_pMaterial = a_material;
+}
+
 const std::string OBJMesh::GetName() const
 {
 	return m_name;
@@ -91,6 +150,11 @@ std::vector<unsigned int>* OBJMesh::GetIndices()
 	return &m_indices;
 }
 
+OBJMaterial* OBJMesh::GetMaterial()
+{
+	return m_pMaterial;
+}
+
 bool OBJModel::Load(const char* a_filename)
 {
 	std::cout << "Attempting to open file: " << a_filename << std::endl;
@@ -102,6 +166,21 @@ bool OBJModel::Load(const char* a_filename)
 	if (file.is_open())
 	{
 		std::cout << "Successfully Opened." << std::endl;
+		// Get file path information.
+		std::string filePath = a_filename;
+		size_t pathEnd = filePath.find_last_of("\/\\");
+
+		if (pathEnd != std::string::npos)
+		{
+			filePath = filePath.substr(0, pathEnd + 1);
+		}
+		else
+		{
+			filePath = "";
+		}
+
+		m_filePath = filePath;
+
 		// Success file has been opened, verify contents of file.
 		file.ignore(std::numeric_limits<std::streamsize>::max());
 		std::streamsize fileSize = file.gcount();
@@ -114,14 +193,17 @@ bool OBJModel::Load(const char* a_filename)
 			file.close();
 		}
 
-		int bytesInKilobyte = 1024;
-		std::cout << "File size: " << fileSize / bytesInKilobyte << " KB" << std::endl;
+		const unsigned int kilobyte = 1024;
+		std::cout << "File size: " << fileSize / kilobyte << " KB" << std::endl;
 
-		OBJMesh* currentMesh = nullptr;
+		OBJMesh* pCurrentMesh = nullptr;
 		std::string fileLine;
 		std::vector<glm::vec4> vertexData;
 		std::vector<glm::vec4> normalData;
 		std::vector<glm::vec2> uvData;
+		// Store out material is a string as face data is not generated prior 
+		// to material assignment and may not have a mesh.
+		OBJMaterial* pCurrentMtl = nullptr;
 
 		// Set up reading in chunks of a file at a time.
 		while (!file.eof())
@@ -148,25 +230,148 @@ bool OBJModel::Load(const char* a_filename)
 						continue;
 					}
 
-					if (dataType == "mtllib")
+					if (dataType == "newmtl")
 					{
-						std::cout << "Material File: " << data << std::endl;
+						std::cout << "New material found: " << data << std::endl;
+
+						if (m_pCurrentMaterial)
+						{
+							m_materials.push_back(m_pCurrentMaterial);
+						}
+
+						m_pCurrentMaterial = new OBJMaterial();
+						m_pCurrentMaterial->SetName(data);
 						continue;
 					}
 
-					if (dataType == "g")
+					if (dataType == "Ns")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Ns is guaranteed to be a single float value.
+							m_pCurrentMaterial->GetKS()->a = std::stof(data);
+						}
+
+						continue;
+					}
+
+					if (dataType == "Ka")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Process kA as vector string.
+							// Store alpha channel as it may contain refractive index.
+							float kAD = m_pCurrentMaterial->GetKA()->a;
+							m_pCurrentMaterial->SetKA(ProcessVectorString(data));
+							m_pCurrentMaterial->GetKA()->a = kAD;
+						}
+
+						continue;
+					}
+
+					if (dataType == "Kd")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Process kD as vector string.
+							// Store alpha as it may contain dissolve value.
+							float kDA = m_pCurrentMaterial->GetKD()->a;
+							m_pCurrentMaterial->SetKD(ProcessVectorString(data));
+							m_pCurrentMaterial->GetKD()->a = kDA;
+						}
+
+						continue;
+					}
+
+					if (dataType == "Ks")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Process Ks as vector string.
+							// Store alpha as it may contain specular component.
+							float kSA = m_pCurrentMaterial->GetKS()->a;
+							m_pCurrentMaterial->SetKS(ProcessVectorString(data));
+							m_pCurrentMaterial->GetKS()->a = kSA;
+						}
+
+						continue;
+					}
+
+					if (dataType == "Ke")
+					{
+						// Ke is for emissive properties.
+						// Don't need to support this for our purposes.
+						continue;
+					}
+
+					if (dataType == "Ni")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// This is the refractive index of the mesh (how 
+							// light bends as it passes through the material).
+							// We'll store this in the alpha component of the 
+							// ambient light values (Ka).
+							m_pCurrentMaterial->GetKA()->a = std::stof(data);
+						}
+
+						continue;
+					}
+
+					if (dataType == "d" || dataType == "Tr")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// This is the dissolve or alpha value of the 
+							// material. We'll store this in the Kd alpha 
+							// channel.
+							m_pCurrentMaterial->GetKD()->a = std::stof(data);
+
+							if (dataType == "Tr")
+							{
+								m_pCurrentMaterial->GetKD()->a = 1.f - m_pCurrentMaterial->GetKD()->a;
+							}
+						}
+
+						continue;
+					}
+
+					if (dataType == "illum")
+					{
+						// Illum describes the illumintation model used to 
+						// light the model. Ignoe this as we'll light the 
+						// scene our own way.
+						continue;
+					}
+
+					if (dataType == "mtllib")
+					{
+						std::cout << "Material File: " << data << std::endl;
+						// Load in material fle so that materials can be used as required.
+						LoadMaterialLibrary(data);
+						continue;
+					}
+
+					if (dataType == "g" || dataType == "o")
 					{
 						std::cout << "OBJ Group Found: " << data << std::endl;
 						
 						// We can use group tags to split our model into 
 						// smaller mesh components.
-						if (currentMesh != nullptr)
+						if (pCurrentMesh != nullptr)
 						{
-							m_meshes.push_back(currentMesh);
+							m_meshes.push_back(pCurrentMesh);
 						}
 
-						currentMesh = new OBJMesh();
-						currentMesh->SetName(data);
+						pCurrentMesh = new OBJMesh();
+						pCurrentMesh->SetName(data);
+
+						// If we have a material name.
+						if (pCurrentMtl)
+						{
+							pCurrentMesh->SetMaterial(pCurrentMtl);
+							pCurrentMtl = nullptr;
+						}
 					}
 
 					if (dataType == "v") // Data is a vector.
@@ -202,16 +407,22 @@ bool OBJModel::Load(const char* a_filename)
 					{
 						// We have entered processing faces without having 
 						// hit a 'o' or 'g' tag.
-						if (currentMesh == nullptr)
+						if (!pCurrentMesh)
 						{
-							currentMesh = new OBJMesh();
+							pCurrentMesh = new OBJMesh();
+							
+							if (pCurrentMtl)
+							{
+								pCurrentMesh->SetMaterial(pCurrentMtl);
+								pCurrentMtl = nullptr;
+							}
 						}
 
 						// Face consists of 3 -> more vertices split at ' ' 
 						// then at '/' character.
 						std::vector<std::string> faceData =
 							SplitStringAtCharacter(data, ' ');
-						unsigned int ci = (unsigned int)currentMesh->GetVertices()->size();
+						unsigned int ci = (unsigned int)pCurrentMesh->GetVertices()->size();
 
 						for (auto iterator = faceData.begin();
 							iterator != faceData.end();
@@ -234,7 +445,7 @@ bool OBJModel::Load(const char* a_filename)
 								currentVertex.SetUVCoordinate(uvData[triplet.uvCoordinate - 1]);
 							}
 
-							currentMesh->GetVertices()->push_back(currentVertex);
+							pCurrentMesh->GetVertices()->push_back(currentVertex);
 						}
 
 						bool calculateNormals = normalData.empty();
@@ -243,32 +454,53 @@ bool OBJModel::Load(const char* a_filename)
 						// Time to index these into the current mesh.
 						for (unsigned int offset = 1; offset < (faceData.size() - 1); ++offset)
 						{
-							currentMesh->GetIndices()->push_back(ci);
-							currentMesh->GetIndices()->push_back(ci + offset);
-							currentMesh->GetIndices()->push_back(ci + offset + 1);
+							pCurrentMesh->GetIndices()->push_back(ci);
+							pCurrentMesh->GetIndices()->push_back(ci + offset);
+							pCurrentMesh->GetIndices()->push_back(ci + offset + 1);
 
 							// Test to see if the OBJ file contains normal data, 
 							// if normalData is empty then there are no normals.
 							if (calculateNormals)
 							{
-								glm::vec4 normal = currentMesh->CalculateFaceNormal(ci,
+								glm::vec4 normal = pCurrentMesh->CalculateFaceNormal(ci,
 									ci + offset,
 									ci + offset + 1);
-								(*currentMesh->GetVertices())[ci].SetNormal(normal);
-								(*currentMesh->GetVertices())[ci + offset].SetNormal(normal);
-								(*currentMesh->GetVertices())[ci + offset + 1].SetNormal(normal);
+								(*pCurrentMesh->GetVertices())[ci].SetNormal(normal);
+								(*pCurrentMesh->GetVertices())[ci + offset].SetNormal(normal);
+								(*pCurrentMesh->GetVertices())[ci + offset + 1].SetNormal(normal);
 							}
 						}
 
 						continue;
 					}
+
+					if (dataType == "usemtl")
+					{
+						// We have a material to use on the current mesh.
+						OBJMaterial* pMtl = GetMaterialByName(data.c_str());
+
+						if (pMtl)
+						{
+							pCurrentMtl = pMtl;
+
+							if (pCurrentMesh)
+							{
+								pCurrentMesh->SetMaterial(pCurrentMtl);
+							}
+						}
+					}
 				}
 			}
 		}
 
-		if (currentMesh != nullptr)
+		if (pCurrentMesh)
 		{
-			m_meshes.push_back(currentMesh);
+			m_meshes.push_back(pCurrentMesh);
+		}
+
+		if (m_pCurrentMaterial)
+		{
+			m_materials.push_back(m_pCurrentMaterial);
 		}
 
 		file.close();
@@ -311,6 +543,35 @@ OBJMesh* OBJModel::GetMeshByIndex(unsigned int a_index)
 	if (meshCount > 0 && a_index < meshCount)
 	{
 		return m_meshes[a_index];
+	}
+
+	return nullptr;
+}
+
+OBJMaterial* OBJModel::GetMaterialByName(const char* a_name)
+{
+	for (auto iterator = m_materials.begin();
+		iterator != m_materials.end();
+		++iterator)
+	{
+		OBJMaterial* pMaterial = (*iterator);
+		
+		if (pMaterial->GetName() == a_name)
+		{
+			return pMaterial;
+		}
+	}
+
+	return nullptr;
+}
+
+OBJMaterial* OBJModel::GetMaterialByIndex(unsigned int a_index)
+{
+	unsigned int materialCount = (unsigned int)m_materials.size();
+	
+	if (materialCount > 0 && a_index < materialCount)
+	{
+		return m_materials[a_index];
 	}
 
 	return nullptr;
@@ -389,6 +650,41 @@ std::vector<std::string> OBJModel::SplitStringAtCharacter(std::string a_data, ch
 	}
 
 	return lineData;
+}
+
+void OBJModel::LoadMaterialLibrary(std::string a_mtllib)
+{
+	std::string materialFile = m_filePath + a_mtllib;
+	std::cout << "Attempting to load material file: " << materialFile << std::endl;
+	// Get an fstream to read in the file data.
+	std::fstream file;
+	file.open(materialFile, std::ios_base::in | std::ios_base::binary);
+
+	// Test to see if the file has opened correctly.
+	if (file.is_open())
+	{
+		std::cout << "Material Library Successfully Opened\n";
+		// Verify contents of file.
+		// Attempt to read the highest number of bytes from the file.
+		file.ignore(std::numeric_limits<std::streamsize>::max());
+		// gCount will have reached EDF marker, letting us know number of bytes.
+		std::streamsize fileSize = file.gcount();
+		// Clear EDF marker from being read.
+		file.clear();
+		// Seek back to the beginning of the file.
+		file.seekg(0, std::ios_base::beg);
+
+		// If our file has no data close the file and return early.
+		if (fileSize == 0)
+		{
+			std::cout << "File contains no data, closing file.\n";
+			file.close();
+			return;
+		}
+
+		const unsigned int kilobyte = 1024;
+		std::cout << "Material File Size: " << fileSize / kilobyte << " KB" << std::endl;
+	}
 }
 
 OBJModel::OBJFaceTriplet OBJModel::ProcessTriplet(std::string a_triplet)

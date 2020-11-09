@@ -17,7 +17,8 @@ public:
 	void FreeMovement(float a_deltaTime
 		/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/);
 	void UpdateProjectionView();
-	void SendShaderData();
+	void UpdateModelMatrix();
+	void UpdateCameraPosition();
 
 private:
 	const float m_fCameraSpeed;

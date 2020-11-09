@@ -1,6 +1,7 @@
 #include "DebugCamera.h" // File's header.
 #include "GLFW/glfw3.h"
-#include "glm/ext.hpp"
+#include "GLM/ext.hpp"
+#include "OBJLoader.h"
 
 DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_pParentRenderer(a_parentRenderer),
 	m_fCameraSpeed(5.0f),
@@ -124,10 +125,13 @@ void DebugCamera::FreeMovement(float a_deltaTime
 
 void DebugCamera::UpdateProjectionView()
 {
+	glm::mat4 viewMatrix = glm::inverse(m_cameraMatrix);
+	m_projectionViewMatrix = m_projectionMatrix * viewMatrix;
 	// Send the projection matrix to the vertex shader.
 	// Ask the shader program for the location of the projection-view-
 	// matrix uniform variable.
-	int projectionViewUniformLocation = glGetUniformLocation(m_pParentRenderer->GetProgram(), "projectionViewMatrix");
+	int projectionViewUniformLocation =
+		glGetUniformLocation(m_pParentRenderer->GetProgram(), "projectionViewMatrix");
 	// Send this location a pointer to our glm::mat4 (send across float data).
 	glUniformMatrix4fv(projectionViewUniformLocation,
 		1,
@@ -135,8 +139,23 @@ void DebugCamera::UpdateProjectionView()
 		glm::value_ptr(m_projectionViewMatrix));
 }
 
-void DebugCamera::SendShaderData()
+void DebugCamera::UpdateModelMatrix()
 {
-	glm::mat4 viewMatrix = glm::inverse(m_cameraMatrix);
-	m_projectionViewMatrix = m_projectionMatrix * viewMatrix;
+	// Get the model matrix location from the shader program.
+	int modelMatrixUnifromLocation =
+		glGetUniformLocation(m_pParentRenderer->GetProgram(), "modelMatrix");
+	// Send the OBJ model's world matrix data across to the shader program.
+	glUniformMatrix4fv(modelMatrixUnifromLocation,
+		1,
+		false,
+		glm::value_ptr(m_pParentRenderer->GetModel()->GetWorldMatrix()));
+}
+
+void DebugCamera::UpdateCameraPosition()
+{
+	int cameraPositionUniformLocation =
+		glGetUniformLocation(m_pParentRenderer->GetProgram(), "cameraPosition");
+	glUniform4fv(cameraPositionUniformLocation,
+		1,
+		glm::value_ptr(m_cameraMatrix[3]));
 }

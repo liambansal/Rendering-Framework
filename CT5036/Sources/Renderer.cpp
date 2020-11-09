@@ -1,5 +1,6 @@
 #include "Renderer.h" // File's header.
 #include "DebugCamera.h"
+#include "GLM/ext.hpp"
 #include <iostream>
 #include "OBJLoader.h"
 #include "ShaderUtilities.h"
@@ -34,11 +35,17 @@ const GLuint Renderer::GetProgram() const
 	return m_uiProgram;
 }
 
+const OBJModel* Renderer::GetModel() const
+{
+	return m_pOBJModel;
+}
+
 bool Renderer::OnCreate()
 {
 	m_pOBJModel = new OBJModel();
 
-	if (m_pOBJModel->Load("Resources/obj_models/C1102056.obj"))
+	// TODO FIX: chair & box models don't render after attempting to add specular highlights.
+	if (m_pOBJModel->Load("Resources/obj_models/Model_chair/chair.obj"))
 	{
 		// Setup shaders for OBJ model rendering.
 		// Create OBJ shader program.
@@ -120,7 +127,6 @@ void Renderer::Draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Enable shaders.
 	glUseProgram(m_uiProgram);
-	m_pDebugCamera->SendShaderData();
 	m_pDebugCamera->UpdateProjectionView();
 	// Draw a lined grid.
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
@@ -140,7 +146,31 @@ void Renderer::Draw()
 
 	for (unsigned int i = 0; i < m_pOBJModel->GetMeshCount(); ++i)
 	{
+		m_pDebugCamera->UpdateModelMatrix();
+		m_pDebugCamera->UpdateCameraPosition();
 		OBJMesh* pMesh = m_pOBJModel->GetMeshByIndex(i);
+		// Send material data to shader.
+		int kALocation = glGetUniformLocation(m_uiOBJProgram, "kA");
+		int kDLocation = glGetUniformLocation(m_uiOBJProgram, "kD");
+		int kSLocation = glGetUniformLocation(m_uiOBJProgram, "kS");
+		OBJMaterial* pMaterial = pMesh->GetMaterial();
+
+		if (pMaterial)
+		{
+			// Send the OBJ model's world data across to the shader program.
+			glUniform4fv(kALocation, 1, glm::value_ptr(*pMaterial->GetKA()));
+			glUniform4fv(kDLocation, 1, glm::value_ptr(*pMaterial->GetKD()));
+			glUniform4fv(kSLocation, 1, glm::value_ptr(*pMaterial->GetKS()));
+		}
+		// No material to obtain lighting information from so use defaults.
+		else
+		{
+			// Send the OBJ model's world matrix data across to the shader program.
+			glUniform4fv(kALocation, 1, glm::value_ptr(glm::vec4(0.25f, 0.25f, 0.25f, 1.f)));
+			glUniform4fv(kDLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
+			glUniform4fv(kSLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 64.f)));
+		}
+
 		glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
 		glBufferData(GL_ARRAY_BUFFER,
 			pMesh->GetVertices()->size() * sizeof(OBJVertex),
