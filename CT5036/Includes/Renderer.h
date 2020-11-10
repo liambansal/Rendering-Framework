@@ -47,11 +47,20 @@ private:
 	// Vertex buffer to hold our line data for the grid.
 	unsigned int m_uiLineVBO;
 	unsigned int m_uiOBJProgram;
+	/// <summary>
+	/// Variable to keep track of currenly bound shader program
+	/// </summary>
+	unsigned int m_currentProgram;
+
+	void SetProgram(unsigned int program);
+
 	unsigned int m_uiOBJModelBuffer[2];
 
 	DebugCamera* m_pDebugCamera;
 	OBJModel* m_pOBJModel;
 	Line* m_pLines;
 };
+
+
 
 #endif // RENDERER_H.

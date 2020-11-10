@@ -30,9 +30,15 @@ const unsigned int Renderer::GetWindowHeight() const
 	return m_uiWindowHeight;
 }
 
+void Renderer::SetProgram(unsigned int program)
+{
+	glUseProgram(program);
+	m_currentProgram = program;
+}
+
 const GLuint Renderer::GetProgram() const
 {
-	return m_uiProgram;
+	return m_currentProgram;
 }
 
 const OBJModel* Renderer::GetModel() const
@@ -72,30 +78,29 @@ bool Renderer::OnCreate()
 	m_uiProgram = ShaderUtilities::CreateProgram(vertexShader, fragmentShader);
 	// Create a grid of lines to be drawn during our update.
 	// Create a 10x10 square grid.
-	Line* lines = new Line[42];
+	m_pLines = new Line[42];
 	const glm::vec4 white(1.f, 1.f, 1.f, 1.f);
 	const glm::vec4 black(0.f, 0.f, 0.f, 1.f);
 
 	for (int i = 0, j = 0; i < 21; ++i, j += 2)
 	{
-		lines[j].v0.position = glm::vec4(-10 + i, 0.f, 10.f, 1.f);
-		lines[j].v0.colour = (i == 10) ? white : black;
-		lines[j].v1.position = glm::vec4(-10 + i, 0.f, -10.f, 1.f);
-		lines[j].v1.colour = (i == 10) ? white : black;
-
-		lines[j + 1].v0.position = glm::vec4(10, 0.f, -10.f + i, 1.f);
-		lines[j + 1].v0.colour = (i == 10) ? white : black;
-		lines[j + 1].v1.position = glm::vec4(-10, 0.f, -10.f + i, 1.f);
-		lines[j + 1].v1.colour = (i == 10) ? white : black;
+		m_pLines[j].v0.position = glm::vec4(-10 + i, 0.f, 10.f, 1.f);
+		m_pLines[j].v0.colour = (i == 10) ? white : black;
+		m_pLines[j].v1.position = glm::vec4(-10 + i, 0.f, -10.f, 1.f);
+		m_pLines[j].v1.colour = (i == 10) ? white : black;
+		
+		m_pLines[j + 1].v0.position = glm::vec4(10, 0.f, -10.f + i, 1.f);
+		m_pLines[j + 1].v0.colour = (i == 10) ? white : black;
+		m_pLines[j + 1].v1.position = glm::vec4(-10, 0.f, -10.f + i, 1.f);
+		m_pLines[j + 1].v1.colour = (i == 10) ? white : black;
 	}
 
 	glGenBuffers(1, &m_uiLineVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
 	// Fill the vertex buffer with line data.
-	glBufferData(GL_ARRAY_BUFFER, 42 * sizeof(Line), lines, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 42 * sizeof(Line), m_pLines, GL_STATIC_DRAW);
 	// As we have sent the line data to the GPU we no longer require it on the 
 	// CPU side memory.
-	delete[] lines;
 	// Enable the vertex array state since we're semding in an array of 
 	// vertices.
 	glEnableVertexAttribArray(0);
@@ -126,7 +131,7 @@ void Renderer::Draw()
 	glClearColor(redValue, greenValue, blueValue, alphaValue);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Enable shaders.
-	glUseProgram(m_uiProgram);
+	SetProgram(m_uiProgram);
 	m_pDebugCamera->UpdateProjectionView();
 	// Draw a lined grid.
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
@@ -140,8 +145,10 @@ void Renderer::Draw()
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
 	glDrawArrays(GL_LINES, 0, 42 * 2);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glUseProgram(0);
-	glUseProgram(m_uiOBJProgram);
+	
+	SetProgram(0);
+	
+	SetProgram(m_uiOBJProgram);
 	m_pDebugCamera->UpdateProjectionView();
 
 	for (unsigned int i = 0; i < m_pOBJModel->GetMeshCount(); ++i)
@@ -198,7 +205,7 @@ void Renderer::Draw()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
-	glUseProgram(0);
+	SetProgram(0);
 }
 
 void Renderer::Destroy()

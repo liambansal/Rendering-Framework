@@ -178,7 +178,7 @@ inline OBJModel::OBJModel() : m_modelScale(0.5f),
 	m_pCurrentMaterial(nullptr),
 	m_meshes(),
 	m_filePath(),
-	m_worldMatrix(glm::mat4(0.f))
+	m_worldMatrix(glm::mat4(1.f))
 {}
 
 inline OBJModel::~OBJModel()
