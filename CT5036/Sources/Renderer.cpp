@@ -4,6 +4,7 @@
 #include <iostream>
 #include "OBJLoader.h"
 #include "ShaderUtilities.h"
+#include "TextureManager.h"
 #include "Utilities.h"
 
 // Constructor.
@@ -48,11 +49,29 @@ const OBJModel* Renderer::GetModel() const
 
 bool Renderer::OnCreate()
 {
+	TextureManager::CreateInstance();
 	m_pOBJModel = new OBJModel();
 
 	// TODO FIX: chair & box models don't render after attempting to add specular highlights.
-	if (m_pOBJModel->Load("Resources/obj_models/Model_chair/chair.obj"))
+	if (m_pOBJModel->Load("Resources/obj_models/Model_D0208009/D0208009.obj"))
 	{
+		TextureManager* pTextureManager = TextureManager::GetInstance();
+
+		// Load in the model's textures.
+		for (int i = 0; i < m_pOBJModel->GetMaterialCount(); ++i)
+		{
+			OBJMaterial* material = m_pOBJModel->GetMaterialByIndex(i);
+
+			for (int j = 0; j < OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_COUNT; ++j)
+			{
+				if (material->GetTextureFileName(j).size() > 0)
+				{
+					unsigned int textureID = pTextureManager->LoadTexture(material->GetTextureFileName(j).c_str());
+					material->SetTextureID(j, textureID);
+				}
+			}
+		}
+
 		// Setup shaders for OBJ model rendering.
 		// Create OBJ shader program.
 		unsigned int objVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/obj_vertex.glsl", GL_VERTEX_SHADER);
@@ -121,6 +140,7 @@ void Renderer::Update(float a_deltaTime)
 	m_pDebugCamera->FreeMovement(a_deltaTime);
 }
 
+// TODO FIX: normal map is not being drawn over model as texture.
 void Renderer::Draw()
 {
 	// Set render window's background colour.
@@ -145,9 +165,7 @@ void Renderer::Draw()
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
 	glDrawArrays(GL_LINES, 0, 42 * 2);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
 	SetProgram(0);
-	
 	SetProgram(m_uiOBJProgram);
 	m_pDebugCamera->UpdateProjectionView();
 
@@ -168,6 +186,23 @@ void Renderer::Draw()
 			glUniform4fv(kALocation, 1, glm::value_ptr(*pMaterial->GetKA()));
 			glUniform4fv(kDLocation, 1, glm::value_ptr(*pMaterial->GetKD()));
 			glUniform4fv(kSLocation, 1, glm::value_ptr(*pMaterial->GetKS()));
+
+			// Get the location of the diffuse texture.
+			int textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "diffuseTexture");
+			// Set diffuse texture to be GL_Texture0.
+			glUniform1i(textureUniformLocation, 0);
+			// Set the active texture unit to texture0.
+			glActiveTexture(GL_TEXTURE0);
+			// Bind the texture for diffuse for this material to the texture0.
+			glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_DIFFUSE));
+			textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "specularTexture");
+			glUniform1i(textureUniformLocation, 1);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_SPECULAR));
+			textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "normalTexture");
+			glUniform1i(textureUniformLocation, 2);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_NORMAL));
 		}
 		// No material to obtain lighting information from so use defaults.
 		else
@@ -214,4 +249,6 @@ void Renderer::Destroy()
 	delete[] m_pLines;
 	glDeleteBuffers(1, &m_uiLineVBO);
 	ShaderUtilities::DeleteProgram(m_uiProgram);
+	TextureManager::DestroyInstance();
+	ShaderUtilities::DestroyInstance();
 }

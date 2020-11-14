@@ -41,9 +41,21 @@ OBJMaterial::OBJMaterial() : m_kA(),
 OBJMaterial::~OBJMaterial()
 {}
 
+void OBJMaterial::SetTextureID(unsigned int a_texture, unsigned int a_newID)
+{
+	// TODO: first check if texture is present in array.
+	m_textureIDs[a_texture] = a_newID;
+}
+
 void OBJMaterial::SetName(std::string a_name)
 {
 	m_name = a_name;
+}
+
+void OBJMaterial::SetTextureFileName(OBJMaterial::TEXTURE_TYPES a_texture, std::string a_newName)
+{
+	// TODO: first check if texture is present in array.
+	m_textureFileNames[a_texture] = a_newName;
 }
 
 // Sets the ambient light colour.
@@ -64,9 +76,25 @@ void OBJMaterial::SetKS(glm::vec4 a_kS)
 	m_kS = a_kS;
 }
 
+unsigned int OBJMaterial::GetTextureID(OBJMaterial::TEXTURE_TYPES a_texture)
+{
+	// TODO: first check if texture is present in array.
+	return m_textureIDs[a_texture];
+}
+
 const std::string OBJMaterial::GetName() const
 {
 	return m_name;
+}
+
+const std::string OBJMaterial::GetTextureFileName(unsigned int a_texture) const
+{
+	if (a_texture >= 0 && a_texture < (unsigned int)m_textureFileNames->size())
+	{
+		return m_textureFileNames[a_texture];
+	}
+
+	return 0;
 }
 
 // Returns the ambient light colour.
@@ -230,120 +258,6 @@ bool OBJModel::Load(const char* a_filename)
 						continue;
 					}
 
-					if (dataType == "newmtl")
-					{
-						std::cout << "New material found: " << data << std::endl;
-
-						if (m_pCurrentMaterial)
-						{
-							m_materials.push_back(m_pCurrentMaterial);
-						}
-
-						m_pCurrentMaterial = new OBJMaterial();
-						m_pCurrentMaterial->SetName(data);
-						continue;
-					}
-
-					if (dataType == "Ns")
-					{
-						if (m_pCurrentMaterial)
-						{
-							// Ns is guaranteed to be a single float value.
-							m_pCurrentMaterial->GetKS()->a = std::stof(data);
-						}
-
-						continue;
-					}
-
-					if (dataType == "Ka")
-					{
-						if (m_pCurrentMaterial)
-						{
-							// Process kA as vector string.
-							// Store alpha channel as it may contain refractive index.
-							float kAD = m_pCurrentMaterial->GetKA()->a;
-							m_pCurrentMaterial->SetKA(ProcessVectorString(data));
-							m_pCurrentMaterial->GetKA()->a = kAD;
-						}
-
-						continue;
-					}
-
-					if (dataType == "Kd")
-					{
-						if (m_pCurrentMaterial)
-						{
-							// Process kD as vector string.
-							// Store alpha as it may contain dissolve value.
-							float kDA = m_pCurrentMaterial->GetKD()->a;
-							m_pCurrentMaterial->SetKD(ProcessVectorString(data));
-							m_pCurrentMaterial->GetKD()->a = kDA;
-						}
-
-						continue;
-					}
-
-					if (dataType == "Ks")
-					{
-						if (m_pCurrentMaterial)
-						{
-							// Process Ks as vector string.
-							// Store alpha as it may contain specular component.
-							float kSA = m_pCurrentMaterial->GetKS()->a;
-							m_pCurrentMaterial->SetKS(ProcessVectorString(data));
-							m_pCurrentMaterial->GetKS()->a = kSA;
-						}
-
-						continue;
-					}
-
-					if (dataType == "Ke")
-					{
-						// Ke is for emissive properties.
-						// Don't need to support this for our purposes.
-						continue;
-					}
-
-					if (dataType == "Ni")
-					{
-						if (m_pCurrentMaterial)
-						{
-							// This is the refractive index of the mesh (how 
-							// light bends as it passes through the material).
-							// We'll store this in the alpha component of the 
-							// ambient light values (Ka).
-							m_pCurrentMaterial->GetKA()->a = std::stof(data);
-						}
-
-						continue;
-					}
-
-					if (dataType == "d" || dataType == "Tr")
-					{
-						if (m_pCurrentMaterial)
-						{
-							// This is the dissolve or alpha value of the 
-							// material. We'll store this in the Kd alpha 
-							// channel.
-							m_pCurrentMaterial->GetKD()->a = std::stof(data);
-
-							if (dataType == "Tr")
-							{
-								m_pCurrentMaterial->GetKD()->a = 1.f - m_pCurrentMaterial->GetKD()->a;
-							}
-						}
-
-						continue;
-					}
-
-					if (dataType == "illum")
-					{
-						// Illum describes the illumintation model used to 
-						// light the model. Ignoe this as we'll light the 
-						// scene our own way.
-						continue;
-					}
-
 					if (dataType == "mtllib")
 					{
 						std::cout << "Material File: " << data << std::endl;
@@ -372,6 +286,8 @@ bool OBJModel::Load(const char* a_filename)
 							pCurrentMesh->SetMaterial(pCurrentMtl);
 							pCurrentMtl = nullptr;
 						}
+
+						continue;
 					}
 
 					if (dataType == "v") // Data is a vector.
@@ -488,6 +404,8 @@ bool OBJModel::Load(const char* a_filename)
 								pCurrentMesh->SetMaterial(pCurrentMtl);
 							}
 						}
+
+						continue;
 					}
 				}
 			}
@@ -496,11 +414,6 @@ bool OBJModel::Load(const char* a_filename)
 		if (pCurrentMesh)
 		{
 			m_meshes.push_back(pCurrentMesh);
-		}
-
-		if (m_pCurrentMaterial)
-		{
-			m_materials.push_back(m_pCurrentMaterial);
 		}
 
 		file.close();
@@ -524,6 +437,11 @@ const char* OBJModel::GetFilePath() const
 unsigned int OBJModel::GetMeshCount() const
 {
 	return (unsigned int)m_meshes.size();
+}
+
+unsigned int OBJModel::GetMaterialCount() const
+{
+	return (unsigned int)m_materials.size();
 }
 
 const glm::mat4& OBJModel::GetWorldMatrix() const
@@ -684,6 +602,182 @@ void OBJModel::LoadMaterialLibrary(std::string a_mtllib)
 
 		const unsigned int kilobyte = 1024;
 		std::cout << "Material File Size: " << fileSize / kilobyte << " KB" << std::endl;
+		// Stores file data as its read line by line.
+		std::string fileLine;
+		OBJMaterial* pCurrentMaterial = nullptr;
+
+		while (!file.eof())
+		{
+			if (std::getline(file, fileLine))
+			{
+				if (fileLine.size() > 0)
+				{
+					std::string dataType = LineType(fileLine);
+					
+					// Skip all tests if dataType has a length of 0.
+					if (dataType.length() == 0)
+					{
+						continue;
+					}
+
+					std::string data = LineData(fileLine);
+
+					if (dataType == "#")
+					{
+						std::cout << data << std::endl;
+						continue;
+					}
+
+					if (dataType == "newmtl")
+					{
+						std::cout << "New material found: " << data << std::endl;
+
+						if (m_pCurrentMaterial)
+						{
+							m_materials.push_back(m_pCurrentMaterial);
+						}
+
+						m_pCurrentMaterial = new OBJMaterial();
+						m_pCurrentMaterial->SetName(data);
+						continue;
+					}
+
+					if (dataType == "Ns")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Ns is guaranteed to be a single float value.
+							m_pCurrentMaterial->GetKS()->a = std::stof(data);
+						}
+
+						continue;
+					}
+
+					if (dataType == "Ka")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Process kA as vector string.
+							// Store alpha channel as it may contain refractive index.
+							float kAD = m_pCurrentMaterial->GetKA()->a;
+							m_pCurrentMaterial->SetKA(ProcessVectorString(data));
+							m_pCurrentMaterial->GetKA()->a = kAD;
+						}
+
+						continue;
+					}
+
+					if (dataType == "Kd")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Process kD as vector string.
+							// Store alpha as it may contain dissolve value.
+							float kDA = m_pCurrentMaterial->GetKD()->a;
+							m_pCurrentMaterial->SetKD(ProcessVectorString(data));
+							m_pCurrentMaterial->GetKD()->a = kDA;
+						}
+
+						continue;
+					}
+
+					if (dataType == "Ks")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// Process Ks as vector string.
+							// Store alpha as it may contain specular component.
+							float kSA = m_pCurrentMaterial->GetKS()->a;
+							m_pCurrentMaterial->SetKS(ProcessVectorString(data));
+							m_pCurrentMaterial->GetKS()->a = kSA;
+						}
+
+						continue;
+					}
+
+					if (dataType == "Ke")
+					{
+						// Ke is for emissive properties.
+						// Don't need to support this for our purposes.
+						continue;
+					}
+
+					if (dataType == "Ni")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// This is the refractive index of the mesh (how 
+							// light bends as it passes through the material).
+							// We'll store this in the alpha component of the 
+							// ambient light values (Ka).
+							m_pCurrentMaterial->GetKA()->a = std::stof(data);
+						}
+
+						continue;
+					}
+
+					if (dataType == "d" || dataType == "Tr")
+					{
+						if (m_pCurrentMaterial)
+						{
+							// This is the dissolve or alpha value of the 
+							// material. We'll store this in the Kd alpha 
+							// channel.
+							m_pCurrentMaterial->GetKD()->a = std::stof(data);
+
+							if (dataType == "Tr")
+							{
+								m_pCurrentMaterial->GetKD()->a = 1.f - m_pCurrentMaterial->GetKD()->a;
+							}
+						}
+
+						continue;
+					}
+
+					if (dataType == "illum")
+					{
+						// Illum describes the illumintation model used to 
+						// light the model. Ignoe this as we'll light the 
+						// scene our own way.
+						continue;
+					}
+
+					// Diffuse texture.
+					if (dataType == "map_Kd")
+					{
+						std::vector<std::string> mapData = SplitStringAtCharacter(data, ' ');
+						m_pCurrentMaterial->SetTextureFileName(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_DIFFUSE,
+							m_filePath + mapData[mapData.size() - 1]);
+						continue;
+					}
+
+					// Specular texture.
+					if (dataType == "map_Ks")
+					{
+						std::vector<std::string> mapData = SplitStringAtCharacter(data, ' ');
+						m_pCurrentMaterial->SetTextureFileName(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_SPECULAR,
+							m_filePath + mapData[mapData.size() - 1]);
+						continue;
+					}
+
+					// Normal map texture. Map_bump or bump for OBJ files.
+					if (dataType == "map_bump" || dataType == "bump")
+					{
+						std::vector<std::string> mapData = SplitStringAtCharacter(data, ' ');
+						m_pCurrentMaterial->SetTextureFileName(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_NORMAL,
+							m_filePath + mapData[mapData.size() - 1]);
+						continue;
+					}
+				}
+			}
+		}
+
+		if (m_pCurrentMaterial)
+		{
+			m_materials.push_back(m_pCurrentMaterial);
+		}
+
+		file.close();
 	}
 }
 

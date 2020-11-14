@@ -70,23 +70,39 @@ public:
 	OBJMaterial();
 	~OBJMaterial();
 
+	enum TEXTURE_TYPES
+	{
+		TEXTURE_TYPES_DIFFUSE = 0,
+		TEXTURE_TYPES_SPECULAR,
+		TEXTURE_TYPES_NORMAL,
+		TEXTURE_TYPES_COUNT
+	};
+
+	void SetTextureID(unsigned int a_texture, unsigned int a_newID);
 	void SetName(std::string a_name);
+	void SetTextureFileName(OBJMaterial::TEXTURE_TYPES a_texture,
+		std::string a_newName);
 	// Sets the ambient light colour.
 	void SetKA(glm::vec4 a_kA);
 	// Sets the diffuse light colour.
 	void SetKD(glm::vec4 a_kD);
 	// Sets the specular light colour.
 	void SetKS(glm::vec4 a_kS);
+	unsigned int GetTextureID(OBJMaterial::TEXTURE_TYPES a_texture);
 	const std::string GetName() const;
+	const std::string GetTextureFileName(unsigned int a_texture) const;
 	// Gets the ambient light colour.
 	glm::vec4* GetKA();
 	// Gets the diffuse light colour.
 	glm::vec4* GetKD();
 	// Gets the specular light colour.
 	glm::vec4* GetKS();
-
+	
 private:
+
+	unsigned int m_textureIDs[TEXTURE_TYPES_COUNT];
 	std::string m_name;
+	std::string m_textureFileNames[TEXTURE_TYPES_COUNT];
 	// Colour and illumination variables.
 	// Ambient Light Colour - alpha componenet stores Optical Density (Ni)
 	// (Refraction Index 0.001 - 10).
@@ -144,6 +160,7 @@ public:
 	void Unload();
 	const char* GetFilePath() const;
 	unsigned int GetMeshCount() const;
+	unsigned int GetMaterialCount() const;
 	const glm::mat4& GetWorldMatrix() const;
 	//OBJMesh* GetMeshByName(const char* a_name);
 	OBJMesh* GetMeshByIndex(unsigned int a_index);
