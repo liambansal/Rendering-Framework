@@ -11,6 +11,7 @@
 Renderer::Renderer() : m_uiProgram(0),
 	m_uiLineVBO(0),
 	m_uiOBJProgram(0),
+	m_currentProgram(0),
 	m_uiOBJModelBuffer(),
 	m_pDebugCamera(nullptr),
 	m_pOBJModel(nullptr),

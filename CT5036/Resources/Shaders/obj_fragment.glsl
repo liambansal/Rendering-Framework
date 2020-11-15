@@ -28,7 +28,7 @@ void main()
 	vec3 ambientLight = kA.xyz * iA;
 	
 	float negativeLightDirection = max(0.f, dot(normalize(vertexNormal), -lightDirection));
-	vec3 diffuse = kD.xyz * iD * negativeLightDirection;
+	vec3 diffuse = kD.xyz * iD * negativeLightDirection * textureData.rgb;
 
 	// Reflected light vector.
 	vec3 R = reflect(lightDirection, normalize(vertexNormal)).xyz;

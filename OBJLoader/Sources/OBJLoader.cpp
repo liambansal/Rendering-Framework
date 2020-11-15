@@ -33,7 +33,10 @@ const glm::vec2 OBJVertex::GetUVCoordinate() const
 	return m_uvCoordinate;
 }
 
-OBJMaterial::OBJMaterial() : m_kA(),
+OBJMaterial::OBJMaterial() : m_textureIDs(),
+	m_name(),
+	m_textureFileNames(),
+	m_kA(),
 	m_kD(),
 	m_kS()
 {}
@@ -54,7 +57,6 @@ void OBJMaterial::SetName(std::string a_name)
 
 void OBJMaterial::SetTextureFileName(OBJMaterial::TEXTURE_TYPES a_texture, std::string a_newName)
 {
-	// TODO: first check if texture is present in array.
 	m_textureFileNames[a_texture] = a_newName;
 }
 
@@ -78,7 +80,6 @@ void OBJMaterial::SetKS(glm::vec4 a_kS)
 
 unsigned int OBJMaterial::GetTextureID(OBJMaterial::TEXTURE_TYPES a_texture)
 {
-	// TODO: first check if texture is present in array.
 	return m_textureIDs[a_texture];
 }
 
@@ -94,7 +95,8 @@ const std::string OBJMaterial::GetTextureFileName(unsigned int a_texture) const
 		return m_textureFileNames[a_texture];
 	}
 
-	return 0;
+	std::cout << "Warning: Could not retrieve texture file name" << std::endl;
+	return nullptr;
 }
 
 // Returns the ambient light colour.
