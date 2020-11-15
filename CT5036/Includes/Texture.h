@@ -5,9 +5,8 @@
 //////////////////////////////
 
 #ifndef TEXTURE_H
-#define TETXURE_H
+#define TEXTURE_H
 
-// Includes.
 #include <string>
 
 // Stores texture data.

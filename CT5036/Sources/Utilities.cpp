@@ -1,9 +1,19 @@
 #include "Utilities.h" // File's header.
 #include <fstream>
-#include "GLFW/glfw3.h"
 #include <iostream>
 #include <string>
 #include <vector>
+
+#ifdef WIN64
+#include "GLFW/glfw3.h"
+#endif // WIN64.
+
+#ifdef NX64
+#include <nn/nn_Log.h>
+#include <nn/gll.h>
+#include <nn/nn_TimeSpan.h>
+#include <nn/os.h>
+#endif // NX64.
 
 static double s_previousTime = 0;
 static float s_totalTime = 0;
@@ -110,14 +120,26 @@ GLuint Utilities::CreateProgram()
 
 void Utilities::ResetTimer()
 {
+#ifdef WIN64
 	s_previousTime = glfwGetTime();
+#elif NX64
+	nn::os::Tick tick = nn::os::GetSystemTick();
+	nn::TimeSpan timeSpan = nn::os::ConvertToTimeSpan(tick);
+	s_previousTime = timeSpan.GetMilliSeconds() / 1000.0;
+#endif // WIN64 / NX64.
 	s_totalTime = 0;
 	s_deltaTime = 0;
 }
 
 float Utilities::TickTimer()
 {
+#ifdef WIN64
 	double currentTime = glfwGetTime();
+#elif NX64
+	nn::os::Tick tick = nn::os::GetSystemTick();
+	nn::TimeSpan timeSpan = nn::os::ConvertToTimeSpan(tick);
+	double currentTime = timeSpan.GetMilliSeconds() / 1000.0;
+#endif // WIN64 / NX64.
 	s_deltaTime = (float)(currentTime - s_previousTime);
 	s_totalTime += s_deltaTime;
 	s_previousTime = currentTime;

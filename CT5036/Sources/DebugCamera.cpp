@@ -1,16 +1,24 @@
 #include "DebugCamera.h" // File's header.
-#include "GLFW/glfw3.h"
-#include "GLM/ext.hpp"
+#include "glm/ext.hpp"
 #include "OBJLoader.h"
+#ifdef WIN64
+#include "GLFW/glfw3.h"
+#endif // WIN64.
+#ifdef NX64
+#include <nn/nn_Log.h>
+#include <nn/gll.h>
+#include <nn/nn_TimeSpan.h>
+#include <nn/os.h>
+#endif // NX64.
 
-DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_pParentRenderer(a_parentRenderer),
-	m_fCameraSpeed(5.0f),
+DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_fCameraSpeed(5.0f), 
 	m_fSpeedMultiplier(25.0f),
 	m_cameraMatrix(glm::inverse(
 		glm::lookAt(glm::vec3(10, 10, 10),
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0)))),
-	m_projectionViewMatrix(NULL)
+	m_projectionViewMatrix(NULL),
+	m_pParentRenderer(a_parentRenderer)
 {
 	m_projectionMatrix = glm::perspective(
 		glm::pi<float>() * 0.25f,
@@ -27,6 +35,7 @@ DebugCamera::~DebugCamera()
 void DebugCamera::FreeMovement(float a_deltaTime
 	/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/)
 {
+#ifdef WIN64
 	// Get the current window context.
 	GLFWwindow* window = glfwGetCurrentContext();
 	// Get the camera's forward, right, up and location vectors.
@@ -121,6 +130,7 @@ void DebugCamera::FreeMovement(float a_deltaTime
 	{
 		sbMouseButtonDown = false;
 	}
+#endif // WIN64.
 }
 
 void DebugCamera::UpdateProjectionView()

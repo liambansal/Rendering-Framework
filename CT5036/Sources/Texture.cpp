@@ -5,9 +5,15 @@
 //////////////////////////////
 
 #include "Texture.h" // File's header.
-#include <GLAD/glad.h>
 #include <iostream>
 #include <stb_image.h>
+#ifdef WIN64
+#include <GLAD/glad.h>
+#endif // WIN64.
+#ifdef NX64
+#include <nn/nn_Log.h>
+#include <nn/gll.h>
+#endif
 
 Texture::Texture() : m_uiWidth(0),
 	m_uiHeight(0),

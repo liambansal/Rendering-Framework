@@ -7,15 +7,24 @@
 #include "TextureManager.h"
 #include "Utilities.h"
 
+#ifdef NX64
+#include <nn/nn_Log.h>
+#include <nn/gll.h>
+#include <nn/fs.h>
+#include <nn/nn_Abort.h>
+#endif
+
 // Constructor.
 Renderer::Renderer() : m_uiProgram(0),
-	m_uiLineVBO(0),
-	m_uiOBJProgram(0),
-	m_currentProgram(0),
-	m_uiOBJModelBuffer(),
-	m_pDebugCamera(nullptr),
-	m_pOBJModel(nullptr),
-	m_pLines(nullptr)
+m_uiLineVBO(0),
+m_uiLinesVAO(0),
+m_uiOBJProgram(0),
+m_currentProgram(0),
+m_uiOBJModelVAO(0),
+m_uiOBJModelBuffer(),
+m_pDebugCamera(nullptr),
+m_pOBJModel(nullptr),
+m_pLines(nullptr)
 {}
 
 // Destructor.
@@ -51,10 +60,91 @@ const OBJModel* Renderer::GetModel() const
 bool Renderer::OnCreate()
 {
 	TextureManager::CreateInstance();
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+
+#ifdef WIN64
+	// Create shader program.
+	unsigned int vertexShader = ShaderUtilities::LoadShader("Resources/Shaders/vertex.glsl", GL_VERTEX_SHADER);
+	unsigned int fragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+#elif NX64
+	// The mount name of the resource data.
+	const char* mountName = "rom";
+	// File path of the test target.
+	const char* testTargetPath = "rom:/dummy.bmp";
+	// The buffer size when reading.
+	const size_t readBufferSize = 4 * 1024;
+	// Allocate 128MB of cache memory for file data cache.
+	const size_t fileDataCacheSize = 128 * 1024 * 1024;
+	void* fileDataCache = std::malloc(fileDataCacheSize);
+	NN_ABORT_UNLESS_NOT_NULL(fileDataCache);
+	// TODO: initialize.
+	// Allocate file system cache memory and mount file system for the 
+	// resource data. (This allocated cache memory is used to store file system
+	// management information. It has nothing to do with file data cache).
+	size_t fileSystemCacheSize;
+	NN_ABORT_UNLESS_RESULT_SUCCESS(nn::fs::QueryMountRomCacheSize(&fileSystemCacheSize));
+	void* fileSystemCache = std::malloc(fileSystemCacheSize);
+	NN_ABORT_UNLESS_NOT_NULL(fileSystemCache);
+	NN_ABORT_UNLESS_RESULT_SUCCESS(nn::fs::MountRom(mountName,
+		fileSystemCache,
+		fileSystemCacheSize));
+	// Create shader program.
+	unsigned int vertexShader = ShaderUtilities::LoadShader("rom:/shaders/vertex.glsl", GL_VERTEX_SHADER);
+	unsigned int fragmentShader = ShaderUtilities::LoadShader("rom:/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+#endif // WIN64 / NX64.
+
+	m_uiProgram = ShaderUtilities::CreateProgram(vertexShader, fragmentShader);
+	// Create a grid of lines to be drawn during our update.
+	// Create a 10x10 square grid.
+	Line* lines = new Line[42];
+	const glm::vec4 white(1.f, 1.f, 1.f, 1.f);
+	const glm::vec4 black(0.f, 0.f, 0.f, 1.f);
+
+	for (int i = 0, j = 0; i < 21; ++i, j += 2)
+	{
+		m_pLines[j].v0.position = glm::vec4(-10 + i, 0.f, 10.f, 1.f);
+		m_pLines[j].v0.colour = (i == 10) ? white : black;
+		m_pLines[j].v1.position = glm::vec4(-10 + i, 0.f, -10.f, 1.f);
+		m_pLines[j].v1.colour = (i == 10) ? white : black;
+
+		m_pLines[j + 1].v0.position = glm::vec4(10, 0.f, -10.f + i, 1.f);
+		m_pLines[j + 1].v0.colour = (i == 10) ? white : black;
+		m_pLines[j + 1].v1.position = glm::vec4(-10, 0.f, -10.f + i, 1.f);
+		m_pLines[j + 1].v1.colour = (i == 10) ? white : black;
+	}
+
+	glGenBuffers(1, &m_uiLineVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
+	// Fill the vertex buffer with line data.
+	glBufferStorage(GL_ARRAY_BUFFER, sizeof(Line) * 42, m_pLines, 0);
+	//glBufferData(GL_ARRAY_BUFFER, 42 * sizeof(Line), m_pLines, GL_STATIC_DRAW);
+	// Generate our vertex array object.
+	glGenVertexArrays(1, &m_uiLinesVAO);
+	glBindVertexArray(m_uiLinesVAO);
+	// As we have sent the line data to the GPU we no longer require it on the 
+	// CPU side memory.
+	delete[] lines;
+	// Enable the vertex array state since we're semding in an array of 
+	// vertices.
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	// Specify where our vertex array is, how many components each vertex has, 
+	// the data type of each componenet and whether the data is normalised.
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
+	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	m_pDebugCamera = new DebugCamera(this);
 	m_pOBJModel = new OBJModel();
 
-	// TODO FIX: chair & box models don't render after attempting to add specular highlights.
+#ifdef WIN64
 	if (m_pOBJModel->Load("Resources/obj_models/Model_D0208009/D0208009.obj"))
+#elif NX64
+	// Slightly changed file path from win64 variant.
+	if (m_pOBJModel->Load("rom:/obj_models/Model_D0208009/D0208009.obj"))
+#endif // WIN64 / NX64.
 	{
 		TextureManager* pTextureManager = TextureManager::GetInstance();
 
@@ -75,13 +165,31 @@ bool Renderer::OnCreate()
 
 		// Setup shaders for OBJ model rendering.
 		// Create OBJ shader program.
+#ifdef WIN64
 		unsigned int objVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/obj_vertex.glsl", GL_VERTEX_SHADER);
 		unsigned int objFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/obj_fragment.glsl", GL_FRAGMENT_SHADER);
+#elif NX64
+		unsigned int objVertexShader = ShaderUtilities::LoadShader("rom:/Shaders/obj_vertex.glsl", GL_VERTEX_SHADER);
+		unsigned int objFragmentShader = ShaderUtilities::LoadShader("rom:/Shaders/obj_fragment.glsl", GL_FRAGMENT_SHADER);
+#endif // WIN64 / NX64.
+
 		m_uiOBJProgram = ShaderUtilities::CreateProgram(objVertexShader, objFragmentShader);
 		// Set up vertex and index buffer for OBJ rendering.
 		glGenBuffers(2, m_uiOBJModelBuffer);
 		// Set up vertex buffer data.
 		glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
+		// Position.
+		glEnableVertexAttribArray(0);
+		// Normal.
+		glEnableVertexAttribArray(1);
+		// UV Coordinates.
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), ((char*)0) + OBJVertex::PositionOffset);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::NormalOffset);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::UVCoordinateOffset);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	else
@@ -90,49 +198,13 @@ bool Renderer::OnCreate()
 		return false;
 	}
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	// Create shader program.
-	unsigned int vertexShader = ShaderUtilities::LoadShader("Resources/Shaders/vertex.glsl", GL_VERTEX_SHADER);
-	unsigned int fragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/fragment.glsl", GL_FRAGMENT_SHADER);
-	m_uiProgram = ShaderUtilities::CreateProgram(vertexShader, fragmentShader);
-	// Create a grid of lines to be drawn during our update.
-	// Create a 10x10 square grid.
-	m_pLines = new Line[42];
-	const glm::vec4 white(1.f, 1.f, 1.f, 1.f);
-	const glm::vec4 black(0.f, 0.f, 0.f, 1.f);
+#ifdef NX64
+	// Unmount the file system and free the various memory.
+	nn::fs::Unmount(mountName);
+	std::free(fileSystemCache);
+	std::free(fileDataCache);
+#endif // NX64.
 
-	for (int i = 0, j = 0; i < 21; ++i, j += 2)
-	{
-		m_pLines[j].v0.position = glm::vec4(-10 + i, 0.f, 10.f, 1.f);
-		m_pLines[j].v0.colour = (i == 10) ? white : black;
-		m_pLines[j].v1.position = glm::vec4(-10 + i, 0.f, -10.f, 1.f);
-		m_pLines[j].v1.colour = (i == 10) ? white : black;
-		
-		m_pLines[j + 1].v0.position = glm::vec4(10, 0.f, -10.f + i, 1.f);
-		m_pLines[j + 1].v0.colour = (i == 10) ? white : black;
-		m_pLines[j + 1].v1.position = glm::vec4(-10, 0.f, -10.f + i, 1.f);
-		m_pLines[j + 1].v1.colour = (i == 10) ? white : black;
-	}
-
-	glGenBuffers(1, &m_uiLineVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
-	// Fill the vertex buffer with line data.
-	glBufferData(GL_ARRAY_BUFFER, 42 * sizeof(Line), m_pLines, GL_STATIC_DRAW);
-	// As we have sent the line data to the GPU we no longer require it on the 
-	// CPU side memory.
-	// Enable the vertex array state since we're semding in an array of 
-	// vertices.
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	// Specify where our vertex array is, how many components each vertex has, 
-	// the data type of each componenet and whether the data is normalised.
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// Show prompt to close render window.
-	std::cout << "Press \"Escape\" to close render window.\n";
-	m_pDebugCamera = new DebugCamera(this);
 	return true;
 }
 
@@ -141,7 +213,6 @@ void Renderer::Update(float a_deltaTime)
 	m_pDebugCamera->FreeMovement(a_deltaTime);
 }
 
-// TODO FIX: normal map is not being drawn over model as texture.
 void Renderer::Draw()
 {
 	// Set render window's background colour.
@@ -151,9 +222,16 @@ void Renderer::Draw()
 	float alphaValue = 1.f;
 	glClearColor(redValue, greenValue, blueValue, alphaValue);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// Enable shaders.
 	SetProgram(m_uiProgram);
+	glBindVertexArray(m_uiLinesVAO);
 	m_pDebugCamera->UpdateProjectionView();
+	glDrawArrays(GL_LINES, 0, 42 * 2);
+	glBindVertexArray(0);
+	SetProgram(0);
+	SetProgram(m_uiOBJProgram);
+
 	// Draw a lined grid.
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
 	glBufferData(GL_ARRAY_BUFFER, 42 * sizeof(Line), m_pLines, GL_STATIC_DRAW);
@@ -166,8 +244,10 @@ void Renderer::Draw()
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
 	glDrawArrays(GL_LINES, 0, 42 * 2);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	SetProgram(0);
 	SetProgram(m_uiOBJProgram);
+	glBindVertexArray(m_uiOBJModelVAO);
 	m_pDebugCamera->UpdateProjectionView();
 
 	for (unsigned int i = 0; i < m_pOBJModel->GetMeshCount(); ++i)
@@ -215,6 +295,7 @@ void Renderer::Draw()
 		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
 		glBufferData(GL_ARRAY_BUFFER,
 			pMesh->GetVertices()->size() * sizeof(OBJVertex),
 			pMesh->GetVertices()->data(),
@@ -236,11 +317,13 @@ void Renderer::Draw()
 		glDrawElements(GL_TRIANGLES, (GLsizei)pMesh->GetIndices()->size(), GL_UNSIGNED_INT, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glDrawElements(GL_TRIANGLES,
+			pMesh->GetIndices()->size(),
+			GL_UNSIGNED_INT,
+			0);
 	}
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+	glBindVertexArray(0);
 	SetProgram(0);
 }
 
@@ -249,6 +332,10 @@ void Renderer::Destroy()
 	delete m_pOBJModel;
 	delete[] m_pLines;
 	glDeleteBuffers(1, &m_uiLineVBO);
+	glDeleteBuffers(2, m_uiOBJModelBuffer);
+	glDeleteVertexArrays(1, &m_uiLinesVAO);
+	glDeleteVertexArrays(1, &m_uiOBJModelVAO);
+	ShaderUtilities::DeleteProgram(m_uiOBJProgram);
 	ShaderUtilities::DeleteProgram(m_uiProgram);
 	TextureManager::DestroyInstance();
 	ShaderUtilities::DestroyInstance();
