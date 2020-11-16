@@ -115,7 +115,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(NintendoSdkIncludePath);$(IncludePath);$(ProjectDir)Includes;$(ProjectDir)Includes/GLM;$(ProjectDir)Includes/STB;$(SolutionDir)OBJLoader/Includes;</IncludePath>
+    <IncludePath>$(NintendoSdkIncludePath);$(IncludePath);$(ProjectDir)Includes;$(ProjectDir)Includes/GLM;$(ProjectDir)Includes/STB;$(SolutionDir)OBJLoader/Includes</IncludePath>
     <LibraryPath>$(NintendoSdkLibraryPath);$(LibraryPath);$(SolutionDir)OBJLoader/Libraries;$(SolutionDir)NX64/$(Configuration);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -157,7 +157,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NN_ENABLE_ASSERT;NX64;NN_NINTENDO_SDK;NN_ENABLE_LOG;NN_SDK_BUILD_DEBUG;STB_IMAGE_IMPLEMENTATION;_DEBUG;_CONSOLE;NOMINMAX;GLM_FORCE_SWIZZLE;GLM_FORCE_RADIANS;GLM_FORCE_PURE;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NN_ENABLE_ASSERT;NX64;NN_NINTENDO_SDK;NN_ENABLE_LOG;NN_SDK_BUILD_DEBUG;STB_IMAGE_IMPLEMENTATION;NOMINMAX;GLM_FORCE_SWIZZLE;GLM_FORCE_PURE;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
@@ -235,6 +235,8 @@
     <ClInclude Include="Includes\DebugCamera.h" />
     <ClInclude Include="Includes\GLAD\glad.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Includes\GLAD\khrplatform.h" />
     <ClInclude Include="Includes\GLFW\glfw3.h" />
@@ -250,8 +252,12 @@
     <ClCompile Include="Sources\DebugCamera.cpp" />
     <ClCompile Include="Sources\glad.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Sources\GraphicsHelper.cpp" />
+    <ClCompile Include="Sources\GraphicsHelper.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Sources\Main.cpp" />
     <ClCompile Include="Sources\Renderer.cpp" />
     <ClCompile Include="Sources\ShaderUtilities.cpp" />
@@ -262,15 +268,23 @@
   <ItemGroup>
     <None Include="Resources\Shaders\fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </None>
     <None Include="Resources\Shaders\obj_fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </None>
     <None Include="Resources\Shaders\obj_vertex.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </None>
     <None Include="Resources\Shaders\vertex.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

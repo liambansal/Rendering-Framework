@@ -1,9 +1,10 @@
 #include "DebugCamera.h" // File's header.
-#include "glm/ext.hpp"
+#include "GLM/ext.hpp"
 #include "OBJLoader.h"
 #ifdef WIN64
 #include "GLFW/glfw3.h"
 #endif // WIN64.
+
 #ifdef NX64
 #include <nn/nn_Log.h>
 #include <nn/gll.h>
@@ -11,7 +12,7 @@
 #include <nn/os.h>
 #endif // NX64.
 
-DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_fCameraSpeed(5.0f), 
+DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_fCameraSpeed(5.0f),
 	m_fSpeedMultiplier(25.0f),
 	m_cameraMatrix(glm::inverse(
 		glm::lookAt(glm::vec3(10, 10, 10),
@@ -147,18 +148,6 @@ void DebugCamera::UpdateProjectionView()
 		1,
 		false,
 		glm::value_ptr(m_projectionViewMatrix));
-}
-
-void DebugCamera::UpdateModelMatrix()
-{
-	// Get the model matrix location from the shader program.
-	int modelMatrixUnifromLocation =
-		glGetUniformLocation(m_pParentRenderer->GetProgram(), "modelMatrix");
-	// Send the OBJ model's world matrix data across to the shader program.
-	glUniformMatrix4fv(modelMatrixUnifromLocation,
-		1,
-		false,
-		glm::value_ptr(m_pParentRenderer->GetModel()->GetWorldMatrix()));
 }
 
 void DebugCamera::UpdateCameraPosition()

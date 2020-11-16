@@ -131,9 +131,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)CT5036/Includes;$(ProjectDir)Includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)CT5036/Libraries;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
+    <IncludePath>$(NintendoSdkIncludePath);$(IncludePath);$(SolutionDir)CT5036/Includes;$(ProjectDir)Includes;</IncludePath>
+    <LibraryPath>$(NintendoSdkLibraryPath);$(LibraryPath);$(SolutionDir)CT5036/Libraries;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

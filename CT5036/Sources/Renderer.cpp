@@ -8,8 +8,6 @@
 #include "Utilities.h"
 
 #ifdef NX64
-#include <nn/nn_Log.h>
-#include <nn/gll.h>
 #include <nn/fs.h>
 #include <nn/nn_Abort.h>
 #endif
@@ -252,14 +250,22 @@ void Renderer::Draw()
 
 	for (unsigned int i = 0; i < m_pOBJModel->GetMeshCount(); ++i)
 	{
-		m_pDebugCamera->UpdateModelMatrix();
+		// Get the model matrix location from the shader program.
+		int modelMatrixUnifromLocation =
+			glGetUniformLocation(m_currentProgram, "modelMatrix");
+		// Send the OBJ model's world matrix data across to the shader program.
+		glUniformMatrix4fv(modelMatrixUnifromLocation,
+			1,
+			false,
+			glm::value_ptr(GetModel()->GetWorldMatrix()));
 		m_pDebugCamera->UpdateCameraPosition();
+
 		OBJMesh* pMesh = m_pOBJModel->GetMeshByIndex(i);
+		OBJMaterial* pMaterial = pMesh->GetMaterial();
 		// Send material data to shader.
 		int kALocation = glGetUniformLocation(m_uiOBJProgram, "kA");
 		int kDLocation = glGetUniformLocation(m_uiOBJProgram, "kD");
 		int kSLocation = glGetUniformLocation(m_uiOBJProgram, "kS");
-		OBJMaterial* pMaterial = pMesh->GetMaterial();
 
 		if (pMaterial)
 		{

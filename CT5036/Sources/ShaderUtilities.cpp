@@ -26,7 +26,7 @@ ShaderUtilities::~ShaderUtilities()
 		glDeleteShader(*iterator);
 	}
 
-	std::cout << "Unloading shaders: " + unloadCount;
+	std::cout << "Unloading shaders: " << unloadCount << std::endl;
 	unloadCount = 0;
 
 	// Delete any shaders that have not been unloaded.
@@ -37,7 +37,7 @@ ShaderUtilities::~ShaderUtilities()
 		glDeleteProgram(*iterator);
 	}
 
-	std::cout << "Unloading programs: " + unloadCount;
+	std::cout << "Unloading programs: " << unloadCount << std::endl;
 }
 
 ShaderUtilities* ShaderUtilities::CreateInstance()
@@ -137,7 +137,7 @@ void ShaderUtilities::DeleteShaderInternal(unsigned int a_shaderID)
 		{
 			glDeleteShader(*iterator);
 			// TODO FIX: causes error.
-			/*m_shaders.erase(iterator);*/
+			//m_shaders.erase(iterator);
 			break;
 		}
 	}
