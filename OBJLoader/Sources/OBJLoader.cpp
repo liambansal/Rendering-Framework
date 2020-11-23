@@ -46,7 +46,6 @@ OBJMaterial::~OBJMaterial()
 
 void OBJMaterial::SetTextureID(unsigned int a_texture, unsigned int a_newID)
 {
-	// TODO: first check if texture is present in array.
 	m_textureIDs[a_texture] = a_newID;
 }
 
@@ -96,7 +95,7 @@ const std::string OBJMaterial::GetTextureFileName(unsigned int a_texture) const
 	}
 
 	std::cout << "Warning: Could not retrieve texture file name" << std::endl;
-	return nullptr;
+	return "";
 }
 
 // Returns the ambient light colour.

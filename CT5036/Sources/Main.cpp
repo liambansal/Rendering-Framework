@@ -1,9 +1,15 @@
 #include "Renderer.h"
 
+#ifdef WIN64
 int main()
+#elif NX64
+extern "C" void nnMain()
+#endif // WIN64 / NX64.
 {
 	Renderer* renderer = new Renderer();
 	renderer->Run("My Application", 1920, 1080, false);
 	delete renderer;
-	return EXIT_SUCCESS;
+#ifdef WIN64
+	return 0;
+#endif // WIN64.
 }

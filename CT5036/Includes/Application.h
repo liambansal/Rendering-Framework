@@ -1,7 +1,10 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-// Forward declarations.
+#ifdef NX64
+#include "GraphicsHelper.h"
+#endif // NX64.
+
 struct GLFWwindow;
 
 class Application
@@ -23,6 +26,11 @@ public:
 protected:
 	unsigned int m_uiWindowWidth;
 	unsigned int m_uiWindowHeight;
+
+#ifdef NX64
+	GraphicsHelper graphicsHelper;
+#endif // NX64.
+
 
 private:
 	// Pure virtual function to be implemented by child classes.

@@ -3,6 +3,12 @@
 
 // Includes.
 #include "Renderer.h"
+#ifdef NX64
+#include <nn/nn_Macro.h>
+#endif // NX64.
+#ifdef WIN64
+#define NN_IS_UNUSED_MEMBER();
+#endif // WIN64.
 
 class DebugCamera : public Renderer
 {
@@ -17,12 +23,17 @@ public:
 	void FreeMovement(float a_deltaTime
 		/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/);
 	void UpdateProjectionView();
-	void UpdateModelMatrix();
 	void UpdateCameraPosition();
 
 private:
+#ifdef WIN64
 	const float m_fCameraSpeed;
 	const float m_fSpeedMultiplier;
+#endif // WIN64.
+#ifdef NX64
+	const float NN_IS_UNUSED_MEMBER(m_fCameraSpeed);
+	const float NN_IS_UNUSED_MEMBER(m_fSpeedMultiplier);
+#endif // NX64.
 	// World space matrix for the camera.
 	glm::mat4 m_cameraMatrix;
 	glm::mat4 m_projectionMatrix;

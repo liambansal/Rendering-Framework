@@ -1,7 +1,6 @@
 #ifndef SHADER_UTILITIES_H
 #define SHADER_UTILITIES_H
 
-// Includes.
 #include <vector>
 
 // Class implements a singleton design pattern.

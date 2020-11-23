@@ -3,8 +3,14 @@
 
 // Includes.
 #include "Application.h"
+#ifdef WIN64
 #include "GLAD/glad.h"
+#endif // WIN64.
 #include "GLM/glm.hpp"
+#ifdef NX64
+#include <nn/nn_Log.h>
+#include <nn/gll.h>
+#endif // NX64.
 
 // Forward Declarations.
 class DebugCamera;
@@ -50,11 +56,13 @@ private:
 	/// Vertex buffer to hold our line data for the grid.
 	/// </summary>
 	unsigned int m_uiLineVBO;
+	unsigned int m_uiLinesVAO;
 	unsigned int m_uiOBJProgram;
 	/// <summary>
 	/// Variable to keep track of currenly bound shader program
 	/// </summary>
 	unsigned int m_currentProgram;
+	unsigned int m_uiOBJModelVAO;
 	unsigned int m_uiOBJModelBuffer[2];
 
 	DebugCamera* m_pDebugCamera;

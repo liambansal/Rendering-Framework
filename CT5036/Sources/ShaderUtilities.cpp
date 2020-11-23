@@ -1,7 +1,13 @@
-#include "ShaderUtilities.h"
+#include "ShaderUtilities.h" // File's header.
 #include <iostream>
-#include <glad/glad.h>
 #include "Utilities.h"
+#ifdef WIN64
+#include <glad/glad.h>
+#endif // WIN64.
+#ifdef NX64
+#include <nn/nn_Log.h>
+#include <nn/gll.h>
+#endif
 
 // Static instance of shader uilities.
 ShaderUtilities* ShaderUtilities::m_instance = nullptr;
@@ -20,7 +26,7 @@ ShaderUtilities::~ShaderUtilities()
 		glDeleteShader(*iterator);
 	}
 
-	std::cout << "Unloading shaders: " + unloadCount;
+	std::cout << "Unloading shaders: " << unloadCount << std::endl;
 	unloadCount = 0;
 
 	// Delete any shaders that have not been unloaded.
@@ -31,7 +37,7 @@ ShaderUtilities::~ShaderUtilities()
 		glDeleteProgram(*iterator);
 	}
 
-	std::cout << "Unloading programs: " + unloadCount;
+	std::cout << "Unloading programs: " << unloadCount << std::endl;
 }
 
 ShaderUtilities* ShaderUtilities::CreateInstance()
@@ -130,7 +136,8 @@ void ShaderUtilities::DeleteShaderInternal(unsigned int a_shaderID)
 		if (*iterator == a_shaderID)
 		{
 			glDeleteShader(*iterator);
-			m_shaders.erase(iterator);
+			// TODO FIX: causes error.
+			//m_shaders.erase(iterator);
 			break;
 		}
 	}
@@ -192,7 +199,8 @@ void ShaderUtilities::DeleteProgramInternal(unsigned int a_program)
 		++iterator)
 	{
 		glDeleteProgram(*iterator);
-		m_programs.erase(iterator);
+		// TODO FIX: causes error.
+		//m_programs.erase(iterator);
 		break;
 	}
 }

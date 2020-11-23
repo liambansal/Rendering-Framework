@@ -1,8 +1,14 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-// Includes.
+#ifdef WIN64
 #include "GLAD/glad.h"
+#endif // WIN64.
+
+#ifdef NX64
+#include <nn/nn_Log.h>
+#include <nn/gll.h>
+#endif // NX64.
 
 // A utility class with static helper methods.
 class Utilities
