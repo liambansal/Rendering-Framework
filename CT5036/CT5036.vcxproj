@@ -240,7 +240,9 @@
     </ClInclude>
     <ClInclude Include="Includes\GLAD\khrplatform.h" />
     <ClInclude Include="Includes\GLFW\glfw3.h" />
-    <ClInclude Include="Includes\GraphicsHelper.h" />
+    <ClInclude Include="Includes\GraphicsHelper.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Includes\Renderer.h" />
     <ClInclude Include="Includes\ShaderUtilities.h" />
     <ClInclude Include="Includes\Texture.h" />

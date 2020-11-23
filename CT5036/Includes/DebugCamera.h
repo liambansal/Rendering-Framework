@@ -26,8 +26,14 @@ public:
 	void UpdateCameraPosition();
 
 private:
+#ifdef WIN64
+	const float m_fCameraSpeed;
+	const float m_fSpeedMultiplier;
+#endif // WIN64.
+#ifdef NX64
 	const float NN_IS_UNUSED_MEMBER(m_fCameraSpeed);
 	const float NN_IS_UNUSED_MEMBER(m_fSpeedMultiplier);
+#endif // NX64.
 	// World space matrix for the camera.
 	glm::mat4 m_cameraMatrix;
 	glm::mat4 m_projectionMatrix;
