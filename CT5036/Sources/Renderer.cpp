@@ -95,7 +95,7 @@ bool Renderer::OnCreate()
 	m_uiProgram = ShaderUtilities::CreateProgram(vertexShader, fragmentShader);
 	// Create a grid of lines to be drawn during our update.
 	// Create a 10x10 square grid.
-	Line* lines = new Line[42];
+	m_pLines = new Line[42];
 	const glm::vec4 white(1.f, 1.f, 1.f, 1.f);
 	const glm::vec4 black(0.f, 0.f, 0.f, 1.f);
 
@@ -116,13 +116,9 @@ bool Renderer::OnCreate()
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
 	// Fill the vertex buffer with line data.
 	glBufferStorage(GL_ARRAY_BUFFER, sizeof(Line) * 42, m_pLines, 0);
-	//glBufferData(GL_ARRAY_BUFFER, 42 * sizeof(Line), m_pLines, GL_STATIC_DRAW);
 	// Generate our vertex array object.
 	glGenVertexArrays(1, &m_uiLinesVAO);
 	glBindVertexArray(m_uiLinesVAO);
-	// As we have sent the line data to the GPU we no longer require it on the 
-	// CPU side memory.
-	delete[] lines;
 	// Enable the vertex array state since we're semding in an array of 
 	// vertices.
 	glEnableVertexAttribArray(0);
@@ -147,7 +143,7 @@ bool Renderer::OnCreate()
 		TextureManager* pTextureManager = TextureManager::GetInstance();
 
 		// Load in the model's textures.
-		for (int i = 0; i < m_pOBJModel->GetMaterialCount(); ++i)
+		for (unsigned int i = 0; i < m_pOBJModel->GetMaterialCount(); ++i)
 		{
 			OBJMaterial* material = m_pOBJModel->GetMaterialByIndex(i);
 

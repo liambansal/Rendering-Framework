@@ -197,7 +197,7 @@ bool OBJModel::Load(const char* a_filename)
 		std::cout << "Successfully Opened." << std::endl;
 		// Get file path information.
 		std::string filePath = a_filename;
-		size_t pathEnd = filePath.find_last_of("\/\\");
+		size_t pathEnd = filePath.find_last_of("/\\");
 
 		if (pathEnd != std::string::npos)
 		{
