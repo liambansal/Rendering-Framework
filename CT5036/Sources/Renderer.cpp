@@ -119,12 +119,12 @@ bool Renderer::OnCreate()
 	// Generate our vertex array object.
 	glGenVertexArrays(1, &m_uiLinesVAO);
 	glBindVertexArray(m_uiLinesVAO);
-	// Enable the vertex array state since we're semding in an array of 
+	// Enable the vertex array state since we're sending in an array of 
 	// vertices.
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	// Specify where our vertex array is, how many components each vertex has, 
-	// the data type of each componenet and whether the data is normalised.
+	// the data type of each component and whether the data is normalised.
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
@@ -225,22 +225,6 @@ void Renderer::Draw()
 	glBindVertexArray(0);
 	SetProgram(0);
 	SetProgram(m_uiOBJProgram);
-
-	// Draw a lined grid.
-	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
-	glBufferData(GL_ARRAY_BUFFER, 42 * sizeof(Line), m_pLines, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	// Specify where our vertex array is, how many components each vertex has, 
-	// the data type of each component and whether the data is normalised or 
-	// not.
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
-	glDrawArrays(GL_LINES, 0, 42 * 2);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	SetProgram(0);
-	SetProgram(m_uiOBJProgram);
 	glBindVertexArray(m_uiOBJModelVAO);
 	m_pDebugCamera->UpdateProjectionView();
 
@@ -303,26 +287,11 @@ void Renderer::Draw()
 			pMesh->GetVertices()->data(),
 			GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
-		// Position.
-		glEnableVertexAttribArray(0);
-		// Normal.
-		glEnableVertexAttribArray(1);
-		// UV coordinate.
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), ((char*)0) + OBJVertex::PositionOffset);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::NormalOffset);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::UVCoordinateOffset);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 			pMesh->GetIndices()->size() * sizeof(unsigned int),
 			pMesh->GetIndices()->data(),
 			GL_STATIC_DRAW);
 		glDrawElements(GL_TRIANGLES, (GLsizei)pMesh->GetIndices()->size(), GL_UNSIGNED_INT, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glDrawElements(GL_TRIANGLES,
-			pMesh->GetIndices()->size(),
-			GL_UNSIGNED_INT,
-			0);
 	}
 
 	glBindVertexArray(0);

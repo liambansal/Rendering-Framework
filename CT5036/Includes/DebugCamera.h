@@ -6,9 +6,6 @@
 #ifdef NX64
 #include <nn/nn_Macro.h>
 #endif // NX64.
-#ifdef WIN64
-#define NN_IS_UNUSED_MEMBER();
-#endif // WIN64.
 
 class DebugCamera : public Renderer
 {
