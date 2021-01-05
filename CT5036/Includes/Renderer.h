@@ -28,6 +28,7 @@ public:
 	const unsigned int GetWindowHeight() const;
 	const GLuint GetProgram() const;
 	const OBJModel* GetModel() const;
+	DebugCamera* GetCamera() const;
 
 protected:
 	virtual bool OnCreate();

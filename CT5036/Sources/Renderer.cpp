@@ -55,6 +55,12 @@ const OBJModel* Renderer::GetModel() const
 	return m_pOBJModel;
 }
 
+DebugCamera* Renderer::GetCamera() const
+{
+	return m_pDebugCamera;
+}
+
+
 bool Renderer::OnCreate()
 {
 	TextureManager::CreateInstance();

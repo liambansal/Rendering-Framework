@@ -48,6 +48,12 @@
     <ClInclude Include="Includes\GraphicsHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Cubemap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Application.cpp">
@@ -80,6 +86,12 @@
     <ClCompile Include="Sources\GraphicsHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Cubemap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\obj_fragment.glsl">
@@ -92,6 +104,15 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Resources\Shaders\vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\cubemap_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\skybox_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\skybox_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -232,6 +232,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Includes\Application.h" />
+    <ClInclude Include="Includes\Cubemap.h" />
     <ClInclude Include="Includes\DebugCamera.h" />
     <ClInclude Include="Includes\GLAD\glad.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
@@ -245,12 +246,14 @@
     </ClInclude>
     <ClInclude Include="Includes\Renderer.h" />
     <ClInclude Include="Includes\ShaderUtilities.h" />
+    <ClInclude Include="Includes\Skybox.h" />
     <ClInclude Include="Includes\Texture.h" />
     <ClInclude Include="Includes\TextureManager.h" />
     <ClInclude Include="Includes\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Application.cpp" />
+    <ClCompile Include="Sources\Cubemap.cpp" />
     <ClCompile Include="Sources\DebugCamera.cpp" />
     <ClCompile Include="Sources\glad.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
@@ -263,11 +266,13 @@
     <ClCompile Include="Sources\Main.cpp" />
     <ClCompile Include="Sources\Renderer.cpp" />
     <ClCompile Include="Sources\ShaderUtilities.cpp" />
+    <ClCompile Include="Sources\Skybox.cpp" />
     <ClCompile Include="Sources\Texture.cpp" />
     <ClCompile Include="Sources\TextureManager.cpp" />
     <ClCompile Include="Sources\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\cubemap_fragment.glsl" />
     <None Include="Resources\Shaders\fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -283,6 +288,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </None>
+    <None Include="Resources\Shaders\skybox_fragment.glsl" />
+    <None Include="Resources\Shaders\skybox_vertex.glsl" />
     <None Include="Resources\Shaders\vertex.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
