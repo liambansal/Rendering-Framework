@@ -21,6 +21,8 @@ public:
 		/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/);
 	void UpdateProjectionView();
 	void UpdateCameraPosition();
+	glm::mat4 GetCameraMatrix() const;
+	glm::mat4 GetProjectionMatrix() const;
 
 private:
 #ifdef WIN64

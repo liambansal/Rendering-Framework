@@ -4,8 +4,8 @@
 /// Date Created: 05/01/2021.
 //////////////////////////////
 
-#ifndef SKYBOX
-#define SKYBOX
+#ifndef SKYBOX_H
+#define SKYBOX_H
 
 #include <string>
 #include <vector>
@@ -20,7 +20,8 @@ public:
 	Skybox(Renderer* a_parentRenderer);
 	~Skybox();
 
-	void Draw();
+	unsigned int GetTexture() const;
+	unsigned int GetVAO() const;
 
 private:
 	unsigned int m_uiCubemapTexture;
@@ -85,4 +86,4 @@ private:
 	};
 };
 
-#endif // !SKYBOX.
+#endif // !SKYBOX_H.

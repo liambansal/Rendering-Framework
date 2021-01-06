@@ -15,6 +15,7 @@
 // Forward Declarations.
 class DebugCamera;
 class OBJModel;
+class Skybox;
 
 class Renderer : public Application
 {
@@ -59,6 +60,7 @@ private:
 	unsigned int m_uiLineVBO;
 	unsigned int m_uiLinesVAO;
 	unsigned int m_uiOBJProgram;
+	unsigned int m_uiSkyboxProgram;
 	/// <summary>
 	/// Variable to keep track of currenly bound shader program
 	/// </summary>
@@ -69,6 +71,7 @@ private:
 	DebugCamera* m_pDebugCamera;
 	OBJModel* m_pOBJModel;
 	Line* m_pLines;
+	Skybox* m_pSkybox;
 };
 
 #endif // RENDERER_H.

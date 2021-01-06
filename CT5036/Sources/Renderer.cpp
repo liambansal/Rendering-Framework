@@ -4,6 +4,7 @@
 #include <iostream>
 #include "OBJLoader.h"
 #include "ShaderUtilities.h"
+#include "Skybox.h"
 #include "TextureManager.h"
 #include "Utilities.h"
 
@@ -17,12 +18,14 @@ Renderer::Renderer() : m_uiProgram(0),
 m_uiLineVBO(0),
 m_uiLinesVAO(0),
 m_uiOBJProgram(0),
+m_uiSkyboxProgram(0),
 m_currentProgram(0),
 m_uiOBJModelVAO(0),
 m_uiOBJModelBuffer(),
 m_pDebugCamera(nullptr),
 m_pOBJModel(nullptr),
-m_pLines(nullptr)
+m_pLines(nullptr),
+m_pSkybox(nullptr)
 {}
 
 // Destructor.
@@ -130,7 +133,7 @@ bool Renderer::OnCreate()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	// Specify where our vertex array is, how many components each vertex has, 
-	// the data type of each component and whether the data is normalised.
+	// the data type of each component and whether the data is normalized.
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
@@ -138,6 +141,7 @@ bool Renderer::OnCreate()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_pDebugCamera = new DebugCamera(this);
 	m_pOBJModel = new OBJModel();
+	m_pSkybox = new Skybox(this);
 
 #ifdef WIN64
 	if (m_pOBJModel->Load("Resources/obj_models/Model_D0208009/D0208009.obj"))
@@ -205,6 +209,17 @@ bool Renderer::OnCreate()
 	std::free(fileDataCache);
 #endif // NX64.
 
+	// Configure skybox shader.
+	unsigned int skyboxVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_vertex.glsl",
+		GL_VERTEX_SHADER);
+	unsigned int skyboxFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_fragment.glsl",
+		GL_FRAGMENT_SHADER);
+	// Create a shader program using the skybox shader files.
+	unsigned int m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
+	// Set program to the skybox shader ID.
+	SetProgram(m_uiSkyboxProgram);
+	int skyboxUniformLocation = glGetUniformLocation(m_uiSkyboxProgram, "skybox");
+	glUniform1i(skyboxUniformLocation, 3);
 	return true;
 }
 
@@ -233,6 +248,34 @@ void Renderer::Draw()
 	SetProgram(m_uiOBJProgram);
 	glBindVertexArray(m_uiOBJModelVAO);
 	m_pDebugCamera->UpdateProjectionView();
+
+	SetProgram(0);
+	// Change depth function so depth test passes when values are equal to 
+	// depth buffer's content.
+	glDepthFunc(GL_LEQUAL);
+	SetProgram(m_uiSkyboxProgram);
+	// Remove translation from the view matrix.
+	//glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+	int viewLocation =
+		glGetUniformLocation(GetProgram(), "view");
+	glUniformMatrix4fv(viewLocation,
+		1,
+		GL_FALSE,
+		&m_pDebugCamera->GetCameraMatrix()[0][0]);
+	int projectionViewLocation =
+		glGetUniformLocation(GetProgram(), "projection");
+	glUniformMatrix4fv(projectionViewLocation,
+		1,
+		GL_FALSE,
+		&m_pDebugCamera->GetProjectionMatrix()[0][0]);
+	// Skybox cube.
+	glBindVertexArray(m_pSkybox->GetVAO());
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_pSkybox->GetTexture());
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	// Set depth function back to default.
+	glDepthFunc(GL_LEQUAL);
 
 	for (unsigned int i = 0; i < m_pOBJModel->GetMeshCount(); ++i)
 	{

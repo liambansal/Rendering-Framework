@@ -10,7 +10,8 @@
 #include "GLAD/glad.h"
 #endif // WIN64.
 #include "GLM/glm.hpp"
-#include <stb_image.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "STB/stb_image.h" // TODO FIX: including this file produces errors: LNK2005 and LNK1169.
 
 Cubemap::Cubemap()
 {}
@@ -20,14 +21,14 @@ Cubemap::~Cubemap()
 
 unsigned int Cubemap::Load(std::vector<std::string> textures_faces)
 {
-	unsigned int textureID;
+	unsigned int textureID = 0;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	int width;
 	int height;
 	int nrChannels;
 
-	for (unsigned int i = 0; i < textures_faces.size(); i++)
+	for (unsigned int i = 0; i < textures_faces.size(); ++i)
 	{
 		unsigned char* data = stbi_load(textures_faces[i].c_str(), &width, &height, &nrChannels, 0);
 

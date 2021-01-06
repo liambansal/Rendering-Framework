@@ -4,8 +4,8 @@
 /// Date Created: 05/01/2021.
 //////////////////////////////
 
-#ifndef CUBEMAP
-#define CUBEMAP
+#ifndef CUBEMAP_H
+#define CUBEMAP_H
 
 #include <string>
 #include <vector>
@@ -19,4 +19,4 @@ public:
 	unsigned int Load(std::vector<std::string> textures_faces);
 };
 
-#endif // !CUBEMAP.
+#endif // !CUBEMAP_H.

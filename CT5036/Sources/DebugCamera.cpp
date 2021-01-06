@@ -158,3 +158,13 @@ void DebugCamera::UpdateCameraPosition()
 		1,
 		glm::value_ptr(m_cameraMatrix[3]));
 }
+
+glm::mat4 DebugCamera::GetCameraMatrix() const
+{
+	return m_cameraMatrix;
+}
+
+glm::mat4 DebugCamera::GetProjectionMatrix() const
+{
+	return m_projectionMatrix;
+}
