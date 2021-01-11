@@ -215,7 +215,7 @@ bool Renderer::OnCreate()
 	unsigned int skyboxFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_fragment.glsl",
 		GL_FRAGMENT_SHADER);
 	// Create a shader program using the skybox shader files.
-	unsigned int m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
+	m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
 	// Set program to the skybox shader ID.
 	SetProgram(m_uiSkyboxProgram);
 	int skyboxUniformLocation = glGetUniformLocation(m_uiSkyboxProgram, "skybox");
@@ -256,14 +256,13 @@ void Renderer::Draw()
 	SetProgram(m_uiSkyboxProgram);
 	// Remove translation from the view matrix.
 	//glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	int viewLocation =
-		glGetUniformLocation(GetProgram(), "view");
+	int viewLocation =	glGetUniformLocation(GetProgram(), "view");
 	glUniformMatrix4fv(viewLocation,
 		1,
 		GL_FALSE,
 		&m_pDebugCamera->GetCameraMatrix()[0][0]);
-	int projectionViewLocation =
-		glGetUniformLocation(GetProgram(), "projection");
+	
+	int projectionViewLocation = glGetUniformLocation(GetProgram(), "projection");
 	glUniformMatrix4fv(projectionViewLocation,
 		1,
 		GL_FALSE,

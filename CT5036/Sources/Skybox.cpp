@@ -14,9 +14,9 @@
 
 Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
 	m_pCubemap(nullptr),
-	m_pParentRenderer(a_parentRenderer),
-	m_pDebugCamera(m_pParentRenderer->GetCamera())
+	m_pParentRenderer(a_parentRenderer)
 {
+	m_pDebugCamera = m_pParentRenderer->GetCamera();
 	// Skybox VAO & VBO.
 	glGenVertexArrays(1, &m_uiSkyboxVAO);
 	glGenBuffers(1, &m_uiSkyboxVBO);
