@@ -77,12 +77,12 @@ private:
 
 	std::vector<std::string> m_skyboxFaces =
 	{
-		"right.jpg",
-		"left.jpg",
-		"top.jpg",
-		"bottom.jpg",
-		"front.jpg",
-		"back.jpg"
+		"Resources/Skybox/right.jpg",
+		"Resources/Skybox/left.jpg",
+		"Resources/Skybox/top.jpg",
+		"Resources/Skybox/bottom.jpg",
+		"Resources/Skybox/front.jpg",
+		"Resources/Skybox/back.jpg"
 	};
 };
 

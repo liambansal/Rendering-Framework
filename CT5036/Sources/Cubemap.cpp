@@ -11,7 +11,7 @@
 #endif // WIN64.
 #include "GLM/glm.hpp"
 #define STB_IMAGE_IMPLEMENTATION
-#include "STB/stb_image.h" // TODO FIX: including this file produces errors: LNK2005 and LNK1169.
+#include "STB/stb_image.h"
 
 Cubemap::Cubemap()
 {}
@@ -30,10 +30,12 @@ unsigned int Cubemap::Load(std::vector<std::string> textures_faces)
 
 	for (unsigned int i = 0; i < textures_faces.size(); ++i)
 	{
+		// TODO FIX: loading with current texture filenames endlessly produces garbage in the console window.
 		unsigned char* data = stbi_load(textures_faces[i].c_str(), &width, &height, &nrChannels, 0);
 
 		if (data)
 		{
+			std::cout << "Successfully loaded cubemap texture: " << data << std::endl;
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				0,
 				GL_RGB,

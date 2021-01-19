@@ -256,12 +256,11 @@ void Renderer::Draw()
 	SetProgram(m_uiSkyboxProgram);
 	// Remove translation from the view matrix.
 	//glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	int viewLocation =	glGetUniformLocation(GetProgram(), "view");
+	int viewLocation = glGetUniformLocation(GetProgram(), "view");
 	glUniformMatrix4fv(viewLocation,
 		1,
 		GL_FALSE,
 		&m_pDebugCamera->GetCameraMatrix()[0][0]);
-	
 	int projectionViewLocation = glGetUniformLocation(GetProgram(), "projection");
 	glUniformMatrix4fv(projectionViewLocation,
 		1,
@@ -340,7 +339,7 @@ void Renderer::Draw()
 			pMesh->GetIndices()->data(),
 			GL_STATIC_DRAW);
 		glDrawElements(GL_TRIANGLES, (GLsizei)pMesh->GetIndices()->size(), GL_UNSIGNED_INT, 0);
-	}
+	}	
 
 	glBindVertexArray(0);
 	SetProgram(0);
@@ -348,12 +347,14 @@ void Renderer::Draw()
 
 void Renderer::Destroy()
 {
+	delete m_pSkybox;
 	delete m_pOBJModel;
 	delete[] m_pLines;
 	glDeleteBuffers(1, &m_uiLineVBO);
 	glDeleteBuffers(2, m_uiOBJModelBuffer);
 	glDeleteVertexArrays(1, &m_uiLinesVAO);
 	glDeleteVertexArrays(1, &m_uiOBJModelVAO);
+	ShaderUtilities::DeleteProgram(m_uiSkyboxProgram);
 	ShaderUtilities::DeleteProgram(m_uiOBJProgram);
 	ShaderUtilities::DeleteProgram(m_uiProgram);
 	TextureManager::DestroyInstance();

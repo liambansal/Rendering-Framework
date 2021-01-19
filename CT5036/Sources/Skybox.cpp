@@ -25,6 +25,8 @@ Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
 	glBufferData(GL_ARRAY_BUFFER, sizeof(m_fSkyboxVertices), &m_fSkyboxVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Load skybox face textures.
 	m_pCubemap = new Cubemap();
