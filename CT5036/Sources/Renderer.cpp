@@ -144,10 +144,10 @@ bool Renderer::OnCreate()
 	m_pSkybox = new Skybox(this);
 
 #ifdef WIN64
-	if (m_pOBJModel->Load("Resources/obj_models/Model_D0208009/D0208009.obj"))
+	if (m_pOBJModel->Load("Resources/obj_models/Model_C1102056/C1102056.obj"))
 #elif NX64
 	// Slightly changed file path from win64 variant.
-	if (m_pOBJModel->Load("rom:/obj_models/Model_D0208009/D0208009.obj"))
+	if (m_pOBJModel->Load("rom:/obj_models/Model_C1102056/C1102056.obj"))
 #endif // WIN64 / NX64.
 	{
 		TextureManager* pTextureManager = TextureManager::GetInstance();
@@ -249,31 +249,31 @@ void Renderer::Draw()
 	glBindVertexArray(m_uiOBJModelVAO);
 	m_pDebugCamera->UpdateProjectionView();
 
-	SetProgram(0);
-	// Change depth function so depth test passes when values are equal to 
-	// depth buffer's content.
-	glDepthFunc(GL_LEQUAL);
-	SetProgram(m_uiSkyboxProgram);
-	// Remove translation from the view matrix.
-	//glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	int viewLocation = glGetUniformLocation(GetProgram(), "view");
-	glUniformMatrix4fv(viewLocation,
-		1,
-		GL_FALSE,
-		&m_pDebugCamera->GetCameraMatrix()[0][0]);
-	int projectionViewLocation = glGetUniformLocation(GetProgram(), "projection");
-	glUniformMatrix4fv(projectionViewLocation,
-		1,
-		GL_FALSE,
-		&m_pDebugCamera->GetProjectionMatrix()[0][0]);
-	// Skybox cube.
-	glBindVertexArray(m_pSkybox->GetVAO());
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_pSkybox->GetTexture());
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-	// Set depth function back to default.
-	glDepthFunc(GL_LEQUAL);
+	//SetProgram(0);
+	//// Change depth function so depth test passes when values are equal to 
+	//// depth buffer's content.
+	//glDepthFunc(GL_LEQUAL);
+	//SetProgram(m_uiSkyboxProgram);
+	//// Remove translation from the view matrix.
+	////glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+	//int viewLocation = glGetUniformLocation(GetProgram(), "view");
+	//glUniformMatrix4fv(viewLocation,
+	//	1,
+	//	GL_FALSE,
+	//	&m_pDebugCamera->GetCameraMatrix()[0][0]);
+	//int projectionViewLocation = glGetUniformLocation(GetProgram(), "projection");
+	//glUniformMatrix4fv(projectionViewLocation,
+	//	1,
+	//	GL_FALSE,
+	//	&m_pDebugCamera->GetProjectionMatrix()[0][0]);
+	//// Skybox cube.
+	//glBindVertexArray(m_pSkybox->GetVAO());
+	//glActiveTexture(GL_TEXTURE3);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, m_pSkybox->GetTexture());
+	//glDrawArrays(GL_TRIANGLES, 0, 36);
+	//glBindVertexArray(0);
+	//// Set depth function back to default.
+	//glDepthFunc(GL_LEQUAL);
 
 	for (unsigned int i = 0; i < m_pOBJModel->GetMeshCount(); ++i)
 	{
