@@ -25,10 +25,11 @@ void main()
 {
 	// Get texture data from UV coordinates.
 	vec4 textureData = texture(normalTexture, vertexUV);
+	vec4 diffuseData = texture(diffuseTexture, vertexUV);
 	vec3 ambientLight = kA.xyz * iA;
 	
 	float negativeLightDirection = max(0.f, dot(normalize(vertexNormal), -lightDirection));
-	vec3 diffuse = kD.xyz * iD * negativeLightDirection * textureData.rgb;
+	vec3 diffuse = kD.xyz * iD * negativeLightDirection * textureData.rgb * diffuseData.rgb;
 
 	// Reflected light vector.
 	vec3 R = reflect(lightDirection, normalize(vertexNormal)).xyz;
