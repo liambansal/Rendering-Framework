@@ -33,8 +33,7 @@ DebugCamera::~DebugCamera()
 
 // Utility for mouse/keyboard movement of a matrix transform (suitable for 
 // camera).
-void DebugCamera::FreeMovement(float a_deltaTime
-	/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/)
+void DebugCamera::FreeMovement(float a_deltaTime, const glm::vec3& a_up)
 {
 #ifdef WIN64
 	// Get the current window context.
@@ -112,12 +111,21 @@ void DebugCamera::FreeMovement(float a_deltaTime
 		siPreviousMouseX = mouseX;
 		siPreviousMouseY = mouseY;
 		glm::mat4 mMat;
+		const float number = 150.0f;
 
 		// Pitch.
 		if (iDeltaY != 0)
 		{
-			const float number = 150.0f;
 			mMat = glm::axisAngleMatrix(vRight.xyz(), (float)-iDeltaY / number);
+			vRight = mMat * vRight;
+			vUp = mMat * vUp;
+			vForward = mMat * vForward;
+		}
+
+		// Yaw.
+		if (iDeltaX != 0)
+		{
+			mMat = glm::axisAngleMatrix(a_up, (float)-iDeltaX / number);
 			vRight = mMat * vRight;
 			vUp = mMat * vUp;
 			vForward = mMat * vForward;

@@ -17,8 +17,8 @@ public:
 
 	// Utility for mouse/keyboard movement of a matrix transform (suitable for
 	// camera).
-	void FreeMovement(float a_deltaTime
-		/*const glm::vec3& a_up = glm::vec3(0, 1, 0)*/);
+	void FreeMovement(float a_deltaTime,
+		const glm::vec3& a_up = glm::vec3(0, 1, 0));
 	void UpdateProjectionView();
 	void UpdateCameraPosition();
 	glm::mat4 GetCameraMatrix() const;
