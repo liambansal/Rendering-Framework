@@ -144,7 +144,6 @@ void Application::Run(const char* a_application,
 		Destroy();
 	}
 
-	ShaderUtilities::DestroyInstance();
 #ifdef WIN64
 	glfwDestroyWindow(m_pWindow);
 	glfwTerminate();

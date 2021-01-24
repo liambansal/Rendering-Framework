@@ -348,8 +348,11 @@ void Renderer::Draw()
 void Renderer::Destroy()
 {
 	delete m_pSkybox;
+	m_pSkybox = nullptr;
 	delete m_pOBJModel;
+	m_pOBJModel = nullptr;
 	delete[] m_pLines;
+	m_pLines = nullptr;
 	glDeleteBuffers(1, &m_uiLineVBO);
 	glDeleteBuffers(2, m_uiOBJModelBuffer);
 	glDeleteVertexArrays(1, &m_uiLinesVAO);
@@ -357,6 +360,6 @@ void Renderer::Destroy()
 	ShaderUtilities::DeleteProgram(m_uiSkyboxProgram);
 	ShaderUtilities::DeleteProgram(m_uiOBJProgram);
 	ShaderUtilities::DeleteProgram(m_uiProgram);
-	TextureManager::DestroyInstance();
 	ShaderUtilities::DestroyInstance();
+	TextureManager::DestroyInstance();
 }

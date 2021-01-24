@@ -35,7 +35,13 @@ Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
 
 Skybox::~Skybox()
 {
-	// TODO: deallocate memory for cubemap texture.
+	if (m_pCubemap)
+	{
+		delete m_pCubemap;
+		m_pCubemap = nullptr;
+	}
+
+	glDeleteTextures(1, &m_uiCubemapTexture);
 	glDeleteVertexArrays(1, &m_uiSkyboxVAO);
 	glDeleteBuffers(1, &m_uiSkyboxVAO);
 }

@@ -143,7 +143,10 @@ private:
 	OBJMaterial* m_pMaterial;
 };
 
-inline OBJMesh::OBJMesh()
+inline OBJMesh::OBJMesh() : m_name(),
+	m_vertices(),
+	m_indices(),
+	m_pMaterial(nullptr)
 {}
 
 inline OBJMesh::~OBJMesh()
@@ -191,11 +194,12 @@ private:
 	glm::mat4 m_worldMatrix;
 };
 
-inline OBJModel::OBJModel() : m_modelScale(0.5f),
+inline OBJModel::OBJModel() : m_modelScale(0.15f),
 	m_pCurrentMaterial(nullptr),
 	m_meshes(),
+	m_materials(),
 	m_filePath(),
-	m_worldMatrix(glm::mat4(1.f))
+	m_worldMatrix(glm::mat4(1.0f))
 {}
 
 inline OBJModel::~OBJModel()
