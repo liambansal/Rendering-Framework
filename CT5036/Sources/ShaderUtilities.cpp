@@ -1,8 +1,14 @@
+//////////////////////////////
+// File: ShaderUtilities.cpp.
+// Author: Liam Bansal.
+// Date Created: 12/10/2020.
+//////////////////////////////
+
 #include "ShaderUtilities.h" // File's header.
 #include <iostream>
 #include "Utilities.h"
 #ifdef WIN64
-#include <glad/glad.h>
+#include "glad/glad.h"
 #endif // WIN64.
 #ifdef NX64
 #include <nn/nn_Log.h>

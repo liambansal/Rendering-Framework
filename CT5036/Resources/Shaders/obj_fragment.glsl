@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: obj_fragment.glsl.
+// Author: Liam Bansal.
+// Date Created: 25/10/2020.
+//////////////////////////////
+
 #version 460
 
 smooth in vec4 vertexPosition;

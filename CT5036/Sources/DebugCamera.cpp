@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: DebugCamera.cpp.
+// Author: Liam Bansal.
+// Date Created: 05/10/2020.
+//////////////////////////////
+
 #include "DebugCamera.h" // File's header.
 #include "GLM/ext.hpp"
 #include "OBJLoader.h"
@@ -12,8 +18,8 @@
 #include <nn/os.h>
 #endif // NX64.
 
-DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_fCameraSpeed(5.0f),
-	m_fSpeedMultiplier(25.0f),
+DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_fCameraSpeed(6.0f),
+	m_fSpeedMultiplier(6.0f),
 	m_cameraMatrix(glm::inverse(
 		glm::lookAt(glm::vec3(10, 10, 10),
 		glm::vec3(0, 0, 0),

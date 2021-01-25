@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: Utilities.h.
+// Author: Liam Bansal.
+// Date Created: 28/09/2020.
+//////////////////////////////
+
 #ifndef UTILITIES_H
 #define UTILITIES_H
 

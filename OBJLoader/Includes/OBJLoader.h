@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: OBJLoader.h.
+// Author: Liam Bansal.
+// Date Created: 24/10/2020.
+//////////////////////////////
+
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 
@@ -9,21 +15,23 @@
 class OBJVertex
 {
 public:
-	enum VertexAttributeFlags
+	enum VERTEX_ATTRIBUTE_FLAGS
 	{
 		// The position of the vertex.
-		POSITION = (1 << 0),
+		VERTEX_ATTRIBUTE_FLAGS_POSITION = (1 << 0),
 		// The normal for the vertex.
-		NORMAL = (1 << 1),
+		VERTEX_ATTRIBUTE_FLAGS_NORMAL = (1 << 1),
 		// The UV coordinates for the vertex.
-		UVCOORDINATE = (1 << 2)
+		VERTEX_ATTRIBUTE_FLAGS_UVCOORDINATE = (1 << 2),
+		VERTEX_ATTRIBUTE_FLAGS_COUNT
 	};
 
-	enum Offsets
+	enum OFFSETS
 	{
-		PositionOffset = 0,
-		NormalOffset = PositionOffset + sizeof(glm::vec4),
-		UVCoordinateOffset = NormalOffset + sizeof(glm::vec4)
+		OFFSETS_POSITION_OFFSET = 0,
+		OFFSETS_NORMAL_OFFSET = OFFSETS_POSITION_OFFSET + sizeof(glm::vec4),
+		OFFSETS_UV_COORDINATE_OFFSET = OFFSETS_NORMAL_OFFSET + sizeof(glm::vec4),
+		OFFSETS_COUNT
 	};
 
 	OBJVertex();
@@ -99,12 +107,11 @@ public:
 	glm::vec4* GetKS();
 	
 private:
-
 	unsigned int m_textureIDs[TEXTURE_TYPES_COUNT];
 	std::string m_name;
 	std::string m_textureFileNames[TEXTURE_TYPES_COUNT];
 	// Colour and illumination variables.
-	// Ambient Light Colour - alpha componenet stores Optical Density (Ni)
+	// Ambient Light Colour - alpha component stores Optical Density (Ni)
 	// (Refraction Index 0.001 - 10).
 	glm::vec4 m_kA;
 	// Diffuse Light Colour - alpha component stores dissolve (d)(0 - 1).

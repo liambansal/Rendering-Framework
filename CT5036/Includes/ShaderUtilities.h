@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: ShaderUtilities.h.
+// Author: Liam Bansal.
+// Date Created: 12/10/2020.
+//////////////////////////////
+
 #ifndef SHADER_UTILITIES_H
 #define SHADER_UTILITIES_H
 

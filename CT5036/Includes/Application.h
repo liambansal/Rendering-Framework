@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: Application.h.
+// Author: Liam Bansal.
+// Date Created: 24/10/2020.
+//////////////////////////////
+
 #ifndef APPLICATION_H
 #define APPLICATION_H
 

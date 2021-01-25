@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: Utilities.cpp.
+// Author: Liam Bansal.
+// Date Created: 28/09/2020.
+//////////////////////////////
+
 #include "Utilities.h" // File's header.
 #include <fstream>
 #include <iostream>

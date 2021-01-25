@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: Renderer.h.
+// Author: Liam Bansal.
+// Date Created: 26/09/2020.
+//////////////////////////////
+
 #ifndef RENDERER_H
 #define RENDERER_H
 

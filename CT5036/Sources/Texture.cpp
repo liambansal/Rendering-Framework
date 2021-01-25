@@ -8,7 +8,7 @@
 #include <iostream>
 #include <stb_image.h>
 #ifdef WIN64
-#include <GLAD/glad.h>
+#include "GLAD/glad.h"
 #endif // WIN64.
 #ifdef NX64
 #include <nn/nn_Log.h>

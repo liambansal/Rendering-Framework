@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: DebugCamera.h
+// Author: Liam Bansal.
+// Date Created: 05/10/2020.
+//////////////////////////////
+
 #ifndef DEBUG_CAMERA_H
 #define DEBUG_CAMERA_H
 

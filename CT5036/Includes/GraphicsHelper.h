@@ -1,4 +1,9 @@
-#pragma once
+//////////////////////////////
+// File: GraphicsHelper.h.
+// Author: Liam Bansal.
+// Date Created: 15/11/2020.
+//////////////////////////////
+
 /*--------------------------------------------------------------------------------*
   Copyright (C)Nintendo All rights reserved.
 
@@ -11,13 +16,15 @@
   The content herein is highly confidential and should be handled accordingly.
  *--------------------------------------------------------------------------------*/
 
-#pragma once
+#ifndef GRAPHICS_HELPER_H
+#define GRAPHICS_HELPER_H
 
 class GraphicsHelper
 {
 public:
     void Initialize();
     void Finalize();
-
     void SwapBuffers();
 };
+
+#endif // GRAPHICS_HELPER_H.

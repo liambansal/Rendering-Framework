@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: Main.cpp.
+// Author: Liam Bansal.
+// Date Created: 21/09/2020.
+//////////////////////////////
+
 #include "Renderer.h"
 
 #ifdef WIN64

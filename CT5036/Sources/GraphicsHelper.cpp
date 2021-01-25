@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: GraphicsHelper.cpp.
+// Author: Liam Bansal.
+// Date Created: 15/11/2020.
+//////////////////////////////
+
 /*--------------------------------------------------------------------------------*
   Copyright (C)Nintendo All rights reserved.
 
@@ -10,16 +16,14 @@
   The content herein is highly confidential and should be handled accordingly.
  *--------------------------------------------------------------------------------*/
 
+#include "GraphicsHelper.h" // File's header.
 #include <nn/nn_Assert.h>
 #include <nn/vi.h>
 #include <nv/nv_MemoryManagement.h>
-
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-
 #include <cstdlib>
 
-#include "GraphicsHelper.h"
 
 namespace
 {

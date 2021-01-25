@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: Renderer.cpp.
+// Author: Liam Bansal.
+// Date Created: 26/09/2020.
+//////////////////////////////
+
 #include "Renderer.h" // File's header.
 #include "DebugCamera.h"
 #include "GLM/ext.hpp"
@@ -189,9 +195,9 @@ bool Renderer::OnCreate()
 		glEnableVertexAttribArray(1);
 		// UV Coordinates.
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), ((char*)0) + OBJVertex::PositionOffset);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::NormalOffset);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::UVCoordinateOffset);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_POSITION_OFFSET);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_NORMAL_OFFSET);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_UV_COORDINATE_OFFSET);
 		glBindVertexArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

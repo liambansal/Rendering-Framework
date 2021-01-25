@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: OBJLoader.cpp.
+// Author: Liam Bansal.
+// Date Created: 24/10/2020.
+//////////////////////////////
+
 #include "OBJLoader.h" // File's header.
 #include <fstream>
 #include <iostream>
@@ -779,6 +785,10 @@ void OBJModel::LoadMaterialLibrary(std::string a_mtllib)
 		}
 
 		file.close();
+	}
+	else
+	{
+		std::cout << "Error: Material Library Opening Unsuccessful.\n";
 	}
 }
 

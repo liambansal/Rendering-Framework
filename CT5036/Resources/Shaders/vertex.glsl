@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: vertex.glsl.
+// Author: Liam Bansal.
+// Date Created: 29/09/2020.
+//////////////////////////////
+
 #version 460
 
 layout(location = 0) in vec4 position;

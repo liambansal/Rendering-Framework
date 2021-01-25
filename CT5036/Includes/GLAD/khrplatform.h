@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: khrplatform.h.
+// Author: Liam Bansal.
+// Date Created: 26/09/2020.
+//////////////////////////////
+
 #ifndef __khrplatform_h_
 #define __khrplatform_h_
 

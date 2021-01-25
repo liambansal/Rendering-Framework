@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: Application.cpp.
+// Author: Liam Bansal.
+// Date Created: 24/10/2020.
+//////////////////////////////
+
 #include "Application.h" // File's header.
 #include <iostream>
 #ifdef WIN64
@@ -135,11 +141,13 @@ void Application::Run(const char* a_application,
 			glfwSwapBuffers(m_pWindow);
 			// Checks triggered events e.g. keyboard input.
 			glfwPollEvents();
-		} while (m_bRunning == true && glfwWindowShouldClose(m_pWindow) == 0);
+		}
+		while (m_bRunning == true && glfwWindowShouldClose(m_pWindow) == 0);
 #endif // WIN64.
 #ifdef NX64
 			graphicsHelper.SwapBuffers();
-		} while (m_bRunning);
+		}
+		while (m_bRunning);
 #endif // NX64.
 		Destroy();
 	}

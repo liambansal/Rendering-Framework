@@ -1,3 +1,9 @@
+//////////////////////////////
+// File: glfw3.h.
+// Author: Liam Bansal.
+// Date Created: 26/09/2020.
+//////////////////////////////
+
 /*************************************************************************
  * GLFW 3.3 - www.glfw.org
  * A library for OpenGL, window and input
