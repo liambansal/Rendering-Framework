@@ -201,7 +201,8 @@ private:
 	glm::mat4 m_worldMatrix;
 };
 
-inline OBJModel::OBJModel() : m_modelScale(0.15f),
+// Set 1.0f scale for Brass Lion Knocker and 0.15f scale for C1102056.
+inline OBJModel::OBJModel() : m_modelScale(1.0f),
 	m_pCurrentMaterial(nullptr),
 	m_meshes(),
 	m_materials(),

@@ -24,9 +24,9 @@ unsigned int Cubemap::Load(std::vector<std::string> textures_faces)
 	unsigned int textureID = 0;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-	int width;
-	int height;
-	int nrChannels;
+	int width = 0;
+	int height = 0;
+	int nrChannels = 0;
 
 	for (unsigned int i = 0; i < textures_faces.size(); ++i)
 	{

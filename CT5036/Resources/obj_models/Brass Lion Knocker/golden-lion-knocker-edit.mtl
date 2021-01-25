@@ -1,0 +1,26 @@
+# Blender MTL File: 'None'
+# Material Count: 2
+
+newmtl golden-lion-knocker
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_bump Normal_Bump.tga
+map_Kd Diffuse.tga
+map_Ks Specular.tga
+
+newmtl golden-lion-knocker_golden-lion-knocker.jpg
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_bump Normal_Bump_2.tga
+map_Kd Diffuse_2.tga
+map_Ks Specular_2.tga

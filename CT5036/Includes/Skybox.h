@@ -74,7 +74,6 @@ private:
 	Cubemap* m_pCubemap;
 	DebugCamera* m_pDebugCamera;
 	Renderer* m_pParentRenderer;
-
 	std::vector<std::string> m_skyboxFaces =
 	{
 		"Resources/Skybox/right.jpg",

@@ -150,10 +150,10 @@ bool Renderer::OnCreate()
 	m_pSkybox = new Skybox(this);
 
 #ifdef WIN64
-	if (m_pOBJModel->Load("Resources/obj_models/Model_C1102056/C1102056.obj"))
+	if (m_pOBJModel->Load("Resources/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
 #elif NX64
 	// Slightly changed file path from win64 variant.
-	if (m_pOBJModel->Load("rom:/obj_models/Model_C1102056/C1102056.obj"))
+	if (m_pOBJModel->Load("rom:/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
 #endif // WIN64 / NX64.
 	{
 		TextureManager* pTextureManager = TextureManager::GetInstance();
