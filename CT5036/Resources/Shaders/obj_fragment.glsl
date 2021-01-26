@@ -30,12 +30,13 @@ vec4 lightDirection = normalize(vec4(0.f) - vec4(10.f, 8.f, 10.f, 0.f));
 void main()
 {
 	// Get texture data from UV coordinates.
-	vec4 textureData = texture(normalTexture, vertexUV);
+	vec4 normalData = texture(normalTexture, vertexUV);
 	vec4 diffuseData = texture(diffuseTexture, vertexUV);
-	vec3 ambientLight = kA.xyz * iA;
+	vec4 specularData = texture(specularTexture, vertexUV);
+	vec3 ambientLight = kA.xyz * iA * normalData.rgb;
 	
 	float negativeLightDirection = max(0.f, dot(normalize(vertexNormal), -lightDirection));
-	vec3 diffuse = kD.xyz * iD * negativeLightDirection * textureData.rgb * diffuseData.rgb;
+	vec3 diffuse = kD.xyz * iD * negativeLightDirection * diffuseData.rgb;
 
 	// Reflected light vector.
 	vec3 R = reflect(lightDirection, normalize(vertexNormal)).xyz;
@@ -43,7 +44,7 @@ void main()
 	vec3 E = normalize(cameraPosition - vertexPosition).xyz;
 
 	float specularTerm = pow(max(0.f, dot(E, R)), kS.a);
-	vec3 specular = kS.xyz * iS * specularTerm;
+	vec3 specular = kS.xyz * iS * specularTerm * specularData.a;
 
 	outputColour = vec4(ambientLight + diffuse + specular, 1.f);
 }

@@ -22,7 +22,7 @@ public:
 	bool Create(const char* a_applicationName,
 		unsigned int a_windowWidth,
 		unsigned int a_windowheight,
-		bool fullscreen);
+		bool a_fullscreen);
 	void Run(const char* a_application,
 		unsigned int a_windowWidth,
 		unsigned int a_windowHeight,

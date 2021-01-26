@@ -75,9 +75,6 @@ inline bool OBJVertex::operator < (const OBJVertex& a_rhs) const
 class OBJMaterial
 {
 public:
-	OBJMaterial();
-	~OBJMaterial();
-
 	enum TEXTURE_TYPES
 	{
 		TEXTURE_TYPES_DIFFUSE = 0,
@@ -85,6 +82,9 @@ public:
 		TEXTURE_TYPES_NORMAL,
 		TEXTURE_TYPES_COUNT
 	};
+
+	OBJMaterial();
+	~OBJMaterial();
 
 	void SetTextureID(unsigned int a_texture, unsigned int a_newID);
 	void SetName(std::string a_name);
@@ -107,7 +107,7 @@ public:
 	glm::vec4* GetKS();
 	
 private:
-	unsigned int m_textureIDs[TEXTURE_TYPES_COUNT];
+	unsigned int m_uiTextureIDs[TEXTURE_TYPES_COUNT];
 	std::string m_name;
 	std::string m_textureFileNames[TEXTURE_TYPES_COUNT];
 	// Colour and illumination variables.
@@ -147,13 +147,13 @@ private:
 	std::string m_name;
 	std::vector<OBJVertex> m_vertices;
 	std::vector<unsigned int> m_indices;
-	OBJMaterial* m_pMaterial;
+	OBJMaterial* m_poMaterial;
 };
 
 inline OBJMesh::OBJMesh() : m_name(),
 	m_vertices(),
 	m_indices(),
-	m_pMaterial(nullptr)
+	m_poMaterial(nullptr)
 {}
 
 inline OBJMesh::~OBJMesh()
@@ -172,18 +172,11 @@ public:
 	unsigned int GetMeshCount() const;
 	unsigned int GetMaterialCount() const;
 	const glm::mat4& GetWorldMatrix() const;
-	//OBJMesh* GetMeshByName(const char* a_name);
 	OBJMesh* GetMeshByIndex(unsigned int a_index);
 	OBJMaterial* GetMaterialByName(const char* a_name);
 	OBJMaterial* GetMaterialByIndex(unsigned int a_index);
 
 private:
-	std::string LineType(const std::string& a_in);
-	std::string LineData(const std::string& a_in);
-	glm::vec4 ProcessVectorString(const std::string a_data);
-	std::vector<std::string> SplitStringAtCharacter(std::string a_data, char a_character);
-	void LoadMaterialLibrary(std::string a_mtllib);
-
 	typedef struct OBJFaceTriplet
 	{
 		unsigned int vertex;
@@ -191,9 +184,15 @@ private:
 		unsigned int normalVertex;
 	} objFaceTriplet;
 
+	std::string LineType(const std::string& a_in);
+	std::string LineData(const std::string& a_in);
+	glm::vec4 ProcessVectorString(const std::string a_data);
+	std::vector<std::string> SplitStringAtCharacter(std::string a_data, char a_character);
+	void LoadMaterialLibrary(std::string a_mtllib);
+
 	OBJFaceTriplet ProcessTriplet(std::string a_triplet);
 
-	float m_modelScale;
+	float m_fModelScale;
 	OBJMaterial* m_pCurrentMaterial;
 	std::vector<OBJMesh*> m_meshes;
 	std::vector<OBJMaterial*> m_materials;
@@ -202,7 +201,7 @@ private:
 };
 
 // Set 1.0f scale for Brass Lion Knocker and 0.15f scale for C1102056.
-inline OBJModel::OBJModel() : m_modelScale(1.0f),
+inline OBJModel::OBJModel() : m_fModelScale(1.0f),
 	m_pCurrentMaterial(nullptr),
 	m_meshes(),
 	m_materials(),

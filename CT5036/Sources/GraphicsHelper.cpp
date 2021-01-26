@@ -35,38 +35,42 @@ namespace
     nn::vi::Display* g_pDisplay;
     nn::vi::Layer* g_pLayer;
 
-    void* NvAllocateFunction(size_t size, size_t alignment, void* userPtr)
+    void* NvAllocateFunction(size_t a_size, size_t a_alignment, void* a_userPtr)
     {
-        NN_UNUSED(userPtr);
+        NN_UNUSED(a_userPtr);
         // According to specifications of aligned_alloc(), we need to coordinate the size parameter to become the integral multiple of alignment.
-        return aligned_alloc(alignment, nn::util::align_up(size, alignment));
-    }
-    void NvFreeFunction(void* addr, void* userPtr)
-    {
-        NN_UNUSED(userPtr);
-        free(addr);
-    }
-    void* NvReallocateFunction(void* addr, size_t newSize, void* userPtr)
-    {
-        NN_UNUSED(userPtr);
-        return realloc(addr, newSize);
+        return aligned_alloc(a_alignment, nn::util::align_up(a_size, a_alignment));
     }
 
-    void* NvDevtoolsAllocateFunction(size_t size, size_t alignment, void* userPtr)
+    void NvFreeFunction(void* a_addr, void* a_userPtr)
     {
-        NN_UNUSED(userPtr);
+        NN_UNUSED(a_userPtr);
+        free(a_addr);
+    }
+
+    void* NvReallocateFunction(void* a_addr, size_t a_newSize, void* a_userPtr)
+    {
+        NN_UNUSED(a_userPtr);
+        return realloc(a_addr, a_newSize);
+    }
+
+    void* NvDevtoolsAllocateFunction(size_t a_size, size_t a_alignment, void* a_userPtr)
+    {
+        NN_UNUSED(a_userPtr);
         // According to specifications of aligned_alloc(), we need to coordinate the size parameter to become the integral multiple of alignment.
-        return aligned_alloc(alignment, nn::util::align_up(size, alignment));
+        return aligned_alloc(a_alignment, nn::util::align_up(a_size, a_alignment));
     }
-    void NvDevtoolsFreeFunction(void* addr, void* userPtr)
+
+    void NvDevtoolsFreeFunction(void* a_addr, void* a_userPtr)
     {
-        NN_UNUSED(userPtr);
-        free(addr);
+        NN_UNUSED(a_userPtr);
+        free(a_addr);
     }
-    void* NvDevtoolsReallocateFunction(void* addr, size_t newSize, void* userPtr)
+
+    void* NvDevtoolsReallocateFunction(void* a_addr, size_t a_newSize, void* a_userPtr)
     {
-        NN_UNUSED(userPtr);
-        return realloc(addr, newSize);
+        NN_UNUSED(a_userPtr);
+        return realloc(a_addr, a_newSize);
     }
 }
 

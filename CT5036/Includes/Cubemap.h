@@ -16,7 +16,7 @@ public:
 	Cubemap();
 	~Cubemap();
 
-	unsigned int Load(std::vector<std::string> textures_faces);
+	unsigned int Load(std::vector<std::string> a_texturesFaces);
 };
 
 #endif // !CUBEMAP_H.

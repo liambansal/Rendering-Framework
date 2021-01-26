@@ -19,7 +19,7 @@ Cubemap::Cubemap()
 Cubemap::~Cubemap()
 {}
 
-unsigned int Cubemap::Load(std::vector<std::string> textures_faces)
+unsigned int Cubemap::Load(std::vector<std::string> a_texturesFaces)
 {
 	unsigned int textureID = 0;
 	glGenTextures(1, &textureID);
@@ -28,10 +28,10 @@ unsigned int Cubemap::Load(std::vector<std::string> textures_faces)
 	int height = 0;
 	int nrChannels = 0;
 
-	for (unsigned int i = 0; i < textures_faces.size(); ++i)
+	for (unsigned int i = 0; i < a_texturesFaces.size(); ++i)
 	{
 		// TODO FIX: loading with current texture filenames endlessly produces garbage in the console window.
-		unsigned char* data = stbi_load(textures_faces[i].c_str(), &width, &height, &nrChannels, 0);
+		unsigned char* data = stbi_load(a_texturesFaces[i].c_str(), &width, &height, &nrChannels, 0);
 
 		if (data)
 		{
@@ -49,7 +49,7 @@ unsigned int Cubemap::Load(std::vector<std::string> textures_faces)
 		}
 		else
 		{
-			std::cout << "Cubemap texture failed to load at path: " << textures_faces[i] << std::endl;
+			std::cout << "Cubemap texture failed to load at path: " << a_texturesFaces[i] << std::endl;
 			stbi_image_free(data);
 		}
 	}

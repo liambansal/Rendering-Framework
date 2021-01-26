@@ -126,7 +126,7 @@
     <IncludePath>$(SolutionDir)CT5036/Includes;$(ProjectDir)Includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)CT5036/Libraries;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
-    <OutDir>$(ProjectDir)Libraries\</OutDir>
+    <OutDir>$(ProjectDir)Libraries\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">
@@ -182,7 +182,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;GLM_FORCE_SWIZZLE;GLM_FORCE_RADIANS;GLM_FORCE_PURE;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;NOMINMAX;GLM_FORCE_SWIZZLE;GLM_FORCE_RADIANS;GLM_FORCE_PURE;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions);_DEBUG;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -216,7 +216,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;NOMINMAX;GLM_FORCE_SWIZZLE;GLM_FORCE_RADIANS;GLM_FORCE_PURE;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions);NDEBUG;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>

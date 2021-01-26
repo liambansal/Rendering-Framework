@@ -12,9 +12,11 @@ int main()
 extern "C" void nnMain()
 #endif // WIN64 / NX64.
 {
-	Renderer* renderer = new Renderer();
-	renderer->Run("My Application", 1920, 1080, false);
-	delete renderer;
+	Renderer* pRenderer = new Renderer();
+	const unsigned int windowWidth = 1920;
+	const unsigned int windowHeight = 1080;
+	pRenderer->Run("My Application", windowWidth, windowHeight, false);
+	delete pRenderer;
 #ifdef WIN64
 	return 0;
 #endif // WIN64.

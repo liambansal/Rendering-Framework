@@ -25,13 +25,13 @@ m_uiLineVBO(0),
 m_uiLinesVAO(0),
 m_uiOBJProgram(0),
 m_uiSkyboxProgram(0),
-m_currentProgram(0),
+m_uiCurrentProgram(0),
 m_uiOBJModelVAO(0),
 m_uiOBJModelBuffer(),
-m_pDebugCamera(nullptr),
-m_pOBJModel(nullptr),
+m_poDebugCamera(nullptr),
+m_poOBJModel(nullptr),
 m_pLines(nullptr),
-m_pSkybox(nullptr)
+m_poSkybox(nullptr)
 {}
 
 // Destructor.
@@ -48,25 +48,25 @@ const unsigned int Renderer::GetWindowHeight() const
 	return m_uiWindowHeight;
 }
 
-void Renderer::SetProgram(unsigned int program)
+void Renderer::SetProgram(unsigned int a_program)
 {
-	glUseProgram(program);
-	m_currentProgram = program;
+	glUseProgram(a_program);
+	m_uiCurrentProgram = a_program;
 }
 
 const GLuint Renderer::GetProgram() const
 {
-	return m_currentProgram;
+	return m_uiCurrentProgram;
 }
 
 const OBJModel* Renderer::GetModel() const
 {
-	return m_pOBJModel;
+	return m_poOBJModel;
 }
 
 DebugCamera* Renderer::GetCamera() const
 {
-	return m_pDebugCamera;
+	return m_poDebugCamera;
 }
 
 
@@ -145,23 +145,23 @@ bool Renderer::OnCreate()
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	m_pDebugCamera = new DebugCamera(this);
-	m_pOBJModel = new OBJModel();
-	m_pSkybox = new Skybox(this);
+	m_poDebugCamera = new DebugCamera(this);
+	m_poOBJModel = new OBJModel();
+	m_poSkybox = new Skybox(this);
 
 #ifdef WIN64
-	if (m_pOBJModel->Load("Resources/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
+	if (m_poOBJModel->Load("Resources/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
 #elif NX64
 	// Slightly changed file path from win64 variant.
-	if (m_pOBJModel->Load("rom:/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
+	if (m_poOBJModel->Load("rom:/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
 #endif // WIN64 / NX64.
 	{
 		TextureManager* pTextureManager = TextureManager::GetInstance();
 
 		// Load in the model's textures.
-		for (unsigned int i = 0; i < m_pOBJModel->GetMaterialCount(); ++i)
+		for (unsigned int i = 0; i < m_poOBJModel->GetMaterialCount(); ++i)
 		{
-			OBJMaterial* material = m_pOBJModel->GetMaterialByIndex(i);
+			OBJMaterial* material = m_poOBJModel->GetMaterialByIndex(i);
 
 			for (int j = 0; j < OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_COUNT; ++j)
 			{
@@ -215,23 +215,23 @@ bool Renderer::OnCreate()
 	std::free(fileDataCache);
 #endif // NX64.
 
-	// Configure skybox shader.
-	unsigned int skyboxVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_vertex.glsl",
-		GL_VERTEX_SHADER);
-	unsigned int skyboxFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_fragment.glsl",
-		GL_FRAGMENT_SHADER);
-	// Create a shader program using the skybox shader files.
-	m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
-	// Set program to the skybox shader ID.
-	SetProgram(m_uiSkyboxProgram);
-	int skyboxUniformLocation = glGetUniformLocation(m_uiSkyboxProgram, "skybox");
-	glUniform1i(skyboxUniformLocation, 3);
+	//// Configure skybox shader.
+	//unsigned int skyboxVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_vertex.glsl",
+	//	GL_VERTEX_SHADER);
+	//unsigned int skyboxFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_fragment.glsl",
+	//	GL_FRAGMENT_SHADER);
+	//// Create a shader program using the skybox shader files.
+	//m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
+	//// Set program to the skybox shader ID.
+	//SetProgram(m_uiSkyboxProgram);
+	//int skyboxUniformLocation = glGetUniformLocation(m_uiSkyboxProgram, "skybox");
+	//glUniform1i(skyboxUniformLocation, 3);
 	return true;
 }
 
 void Renderer::Update(float a_deltaTime)
 {
-	m_pDebugCamera->FreeMovement(a_deltaTime);
+	m_poDebugCamera->FreeMovement(a_deltaTime);
 }
 
 void Renderer::Draw()
@@ -247,13 +247,13 @@ void Renderer::Draw()
 	// Enable shaders.
 	SetProgram(m_uiProgram);
 	glBindVertexArray(m_uiLinesVAO);
-	m_pDebugCamera->UpdateProjectionView();
+	m_poDebugCamera->UpdateProjectionView();
 	glDrawArrays(GL_LINES, 0, 42 * 2);
 	glBindVertexArray(0);
 	SetProgram(0);
 	SetProgram(m_uiOBJProgram);
 	glBindVertexArray(m_uiOBJModelVAO);
-	m_pDebugCamera->UpdateProjectionView();
+	m_poDebugCamera->UpdateProjectionView();
 
 	//SetProgram(0);
 	//// Change depth function so depth test passes when values are equal to 
@@ -273,27 +273,27 @@ void Renderer::Draw()
 	//	GL_FALSE,
 	//	&m_pDebugCamera->GetProjectionMatrix()[0][0]);
 	//// Skybox cube.
-	//glBindVertexArray(m_pSkybox->GetVAO());
+	//glBindVertexArray(m_poSkybox->GetVAO());
 	//glActiveTexture(GL_TEXTURE3);
-	//glBindTexture(GL_TEXTURE_CUBE_MAP, m_pSkybox->GetTexture());
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, m_poSkybox->GetTexture());
 	//glDrawArrays(GL_TRIANGLES, 0, 36);
 	//glBindVertexArray(0);
 	//// Set depth function back to default.
 	//glDepthFunc(GL_LEQUAL);
 
-	for (unsigned int i = 0; i < m_pOBJModel->GetMeshCount(); ++i)
+	for (unsigned int i = 0; i < m_poOBJModel->GetMeshCount(); ++i)
 	{
 		// Get the model matrix location from the shader program.
 		int modelMatrixUnifromLocation =
-			glGetUniformLocation(m_currentProgram, "modelMatrix");
+			glGetUniformLocation(m_uiCurrentProgram, "modelMatrix");
 		// Send the OBJ model's world matrix data across to the shader program.
 		glUniformMatrix4fv(modelMatrixUnifromLocation,
 			1,
 			false,
 			glm::value_ptr(GetModel()->GetWorldMatrix()));
-		m_pDebugCamera->UpdateCameraPosition();
+		m_poDebugCamera->UpdateCameraPosition();
 
-		OBJMesh* pMesh = m_pOBJModel->GetMeshByIndex(i);
+		OBJMesh* pMesh = m_poOBJModel->GetMeshByIndex(i);
 		OBJMaterial* pMaterial = pMesh->GetMaterial();
 		// Send material data to shader.
 		int kALocation = glGetUniformLocation(m_uiOBJProgram, "kA");
@@ -353,10 +353,10 @@ void Renderer::Draw()
 
 void Renderer::Destroy()
 {
-	delete m_pSkybox;
-	m_pSkybox = nullptr;
-	delete m_pOBJModel;
-	m_pOBJModel = nullptr;
+	delete m_poSkybox;
+	m_poSkybox = nullptr;
+	delete m_poOBJModel;
+	m_poOBJModel = nullptr;
 	delete[] m_pLines;
 	m_pLines = nullptr;
 	glDeleteBuffers(1, &m_uiLineVBO);

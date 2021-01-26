@@ -32,18 +32,18 @@ public:
 
 private:
 #ifdef WIN64
-	const float m_fCameraSpeed;
-	const float m_fSpeedMultiplier;
+	const float mc_fCameraSpeed;
+	const float mc_fSpeedMultiplier;
 #endif // WIN64.
 #ifdef NX64
-	const float NN_IS_UNUSED_MEMBER(m_fCameraSpeed);
-	const float NN_IS_UNUSED_MEMBER(m_fSpeedMultiplier);
+	const float NN_IS_UNUSED_MEMBER(mc_fCameraSpeed);
+	const float NN_IS_UNUSED_MEMBER(mc_fSpeedMultiplier);
 #endif // NX64.
 	// World space matrix for the camera.
 	glm::mat4 m_cameraMatrix;
 	glm::mat4 m_projectionMatrix;
 	glm::mat4 m_projectionViewMatrix;
-	Renderer* m_pParentRenderer;
+	Renderer* m_poParentRenderer;
 };
 
 #endif // DEBUG_CAMERA_H.

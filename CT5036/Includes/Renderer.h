@@ -46,8 +46,6 @@ protected:
 	GLuint m_uiProgram;
 
 private:
-	void SetProgram(unsigned int program);
-
 	typedef struct Vertex
 	{
 		glm::vec4 position;
@@ -60,6 +58,8 @@ private:
 		Vertex v1;
 	} Line;
 
+	void SetProgram(unsigned int a_program);
+
 	/// <summary>
 	/// Vertex buffer to hold our line data for the grid.
 	/// </summary>
@@ -68,16 +68,16 @@ private:
 	unsigned int m_uiOBJProgram;
 	unsigned int m_uiSkyboxProgram;
 	/// <summary>
-	/// Variable to keep track of currenly bound shader program
+	/// Variable to keep track of currently bound shader program
 	/// </summary>
-	unsigned int m_currentProgram;
+	unsigned int m_uiCurrentProgram;
 	unsigned int m_uiOBJModelVAO;
 	unsigned int m_uiOBJModelBuffer[2];
 
-	DebugCamera* m_pDebugCamera;
-	OBJModel* m_pOBJModel;
+	DebugCamera* m_poDebugCamera;
+	OBJModel* m_poOBJModel;
 	Line* m_pLines;
-	Skybox* m_pSkybox;
+	Skybox* m_poSkybox;
 };
 
 #endif // RENDERER_H.

@@ -8,7 +8,7 @@
 #include "Texture.h"
 
 // Set up static pointer for singleton object.
-TextureManager* TextureManager::m_instance = nullptr;
+TextureManager* TextureManager::m_poInstance = nullptr;
 
 TextureManager::TextureManager() : m_pTextureMap()
 {}
@@ -20,30 +20,30 @@ TextureManager::~TextureManager()
 
 TextureManager* TextureManager::CreateInstance()
 {
-	if (m_instance == nullptr)
+	if (m_poInstance == nullptr)
 	{
-		m_instance = new TextureManager();
+		m_poInstance = new TextureManager();
 	}
 
-	return m_instance;
+	return m_poInstance;
 }
 
 TextureManager* TextureManager::GetInstance()
 {
-	if (m_instance == nullptr)
+	if (m_poInstance == nullptr)
 	{
 		return TextureManager::CreateInstance();
 	}
 
-	return m_instance;
+	return m_poInstance;
 }
 
 void TextureManager::DestroyInstance()
 {
-	if (m_instance != nullptr)
+	if (m_poInstance != nullptr)
 	{
-		delete m_instance;
-		m_instance = nullptr;
+		delete m_poInstance;
+		m_poInstance = nullptr;
 	}
 }
 

@@ -36,7 +36,7 @@ private:
 		const int& a_fragmentShader);
 	void DeleteProgramInternal(unsigned int a_program);
 
-	static ShaderUtilities* m_instance;
+	static ShaderUtilities* m_poInstance;
 	std::vector<unsigned int> m_shaders;
 	std::vector<unsigned int> m_programs;
 };

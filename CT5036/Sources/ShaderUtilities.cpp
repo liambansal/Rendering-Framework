@@ -16,7 +16,7 @@
 #endif
 
 // Static instance of shader uilities.
-ShaderUtilities* ShaderUtilities::m_instance = nullptr;
+ShaderUtilities* ShaderUtilities::m_poInstance = nullptr;
 
 ShaderUtilities::ShaderUtilities()
 {}
@@ -48,9 +48,9 @@ ShaderUtilities::~ShaderUtilities()
 
 ShaderUtilities* ShaderUtilities::CreateInstance()
 {
-	if (!m_instance)
+	if (!m_poInstance)
 	{
-		m_instance = new ShaderUtilities();
+		m_poInstance = new ShaderUtilities();
 	}
 	else
 	{
@@ -59,25 +59,25 @@ ShaderUtilities* ShaderUtilities::CreateInstance()
 		std::cout << "Warning: Attempted to create multiple instances of ShaderUtilities.\n";
 	}
 
-	return m_instance;
+	return m_poInstance;
 }
 
 ShaderUtilities* ShaderUtilities::GetInstance()
 {
-	if (!m_instance)
+	if (!m_poInstance)
 	{
 		return ShaderUtilities::CreateInstance();
 	}
 
-	return m_instance;
+	return m_poInstance;
 }
 
 void ShaderUtilities::DestroyInstance()
 {
-	if (m_instance)
+	if (m_poInstance)
 	{
-		delete m_instance;
-		m_instance = nullptr;
+		delete m_poInstance;
+		m_poInstance = nullptr;
 	}
 	else
 	{

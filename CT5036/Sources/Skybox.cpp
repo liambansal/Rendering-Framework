@@ -13,10 +13,10 @@
 #include "Renderer.h"
 
 Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
-	m_pCubemap(nullptr),
-	m_pParentRenderer(a_parentRenderer)
+	m_poCubemap(nullptr),
+	m_poParentRenderer(a_parentRenderer)
 {
-	m_pDebugCamera = m_pParentRenderer->GetCamera();
+	m_poDebugCamera = m_poParentRenderer->GetCamera();
 	//// Skybox VAO & VBO.
 	//glGenVertexArrays(1, &m_uiSkyboxVAO);
 	//glGenBuffers(1, &m_uiSkyboxVBO);
@@ -35,10 +35,10 @@ Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
 
 Skybox::~Skybox()
 {
-	if (m_pCubemap)
+	if (m_poCubemap)
 	{
-		delete m_pCubemap;
-		m_pCubemap = nullptr;
+		delete m_poCubemap;
+		m_poCubemap = nullptr;
 	}
 
 	glDeleteTextures(1, &m_uiCubemapTexture);

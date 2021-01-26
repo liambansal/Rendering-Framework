@@ -18,18 +18,18 @@
 #include <nn/os.h>
 #endif // NX64.
 
-DebugCamera::DebugCamera(Renderer* a_parentRenderer) : m_fCameraSpeed(6.0f),
-	m_fSpeedMultiplier(6.0f),
+DebugCamera::DebugCamera(Renderer* a_parentRenderer) : mc_fCameraSpeed(6.0f),
+	mc_fSpeedMultiplier(6.0f),
 	m_cameraMatrix(glm::inverse(
 		glm::lookAt(glm::vec3(10, 10, 10),
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0)))),
 	m_projectionViewMatrix(NULL),
-	m_pParentRenderer(a_parentRenderer)
+	m_poParentRenderer(a_parentRenderer)
 {
 	m_projectionMatrix = glm::perspective(
 		glm::pi<float>() * 0.25f,
-		(float)m_pParentRenderer->GetWindowWidth() / (float)m_pParentRenderer->GetWindowHeight(),
+		(float)m_poParentRenderer->GetWindowWidth() / (float)m_poParentRenderer->GetWindowHeight(),
 		0.1f,
 		1000.0f);
 }
@@ -52,7 +52,7 @@ void DebugCamera::FreeMovement(float a_deltaTime, const glm::vec3& a_up)
 	// Test to see if the left shift key is pressed. We will use left shift to 
 	// the speed of the camera movement.
 	float frameSpeed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ?
-		a_deltaTime * m_fCameraSpeed * m_fSpeedMultiplier : a_deltaTime * m_fCameraSpeed;
+		a_deltaTime * mc_fCameraSpeed * mc_fSpeedMultiplier : a_deltaTime * mc_fCameraSpeed;
 
 	// Translate camera.
 	// Moves the camera forward.
@@ -156,7 +156,7 @@ void DebugCamera::UpdateProjectionView()
 	// Ask the shader program for the location of the projection-view-
 	// matrix uniform variable.
 	int projectionViewUniformLocation =
-		glGetUniformLocation(m_pParentRenderer->GetProgram(), "projectionViewMatrix");
+		glGetUniformLocation(m_poParentRenderer->GetProgram(), "projectionViewMatrix");
 	// Send this location a pointer to our glm::mat4 (send across float data).
 	glUniformMatrix4fv(projectionViewUniformLocation,
 		1,
@@ -167,7 +167,7 @@ void DebugCamera::UpdateProjectionView()
 void DebugCamera::UpdateCameraPosition()
 {
 	int cameraPositionUniformLocation =
-		glGetUniformLocation(m_pParentRenderer->GetProgram(), "cameraPosition");
+		glGetUniformLocation(m_poParentRenderer->GetProgram(), "cameraPosition");
 	glUniform4fv(cameraPositionUniformLocation,
 		1,
 		glm::value_ptr(m_cameraMatrix[3]));

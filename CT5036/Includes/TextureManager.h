@@ -26,9 +26,6 @@ public:
 	void ReleaseTexture(unsigned int a_texture);
 
 private:
-	TextureManager();
-	~TextureManager();
-
 	// Structure to reference conut a texture.
 	typedef struct TextureReference
 	{
@@ -38,7 +35,10 @@ private:
 		unsigned int referenceCount;
 	} TextureReference;
 
-	static TextureManager* m_instance;
+	TextureManager();
+	~TextureManager();
+
+	static TextureManager* m_poInstance;
 	std::map<std::string, TextureReference> m_pTextureMap;
 };
 

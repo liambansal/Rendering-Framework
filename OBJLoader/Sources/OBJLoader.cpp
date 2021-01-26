@@ -39,7 +39,7 @@ const glm::vec2 OBJVertex::GetUVCoordinate() const
 	return m_uvCoordinate;
 }
 
-OBJMaterial::OBJMaterial() : m_textureIDs(),
+OBJMaterial::OBJMaterial() : m_uiTextureIDs(),
 	m_name(),
 	m_textureFileNames(),
 	m_kA(),
@@ -52,7 +52,7 @@ OBJMaterial::~OBJMaterial()
 
 void OBJMaterial::SetTextureID(unsigned int a_texture, unsigned int a_newID)
 {
-	m_textureIDs[a_texture] = a_newID;
+	m_uiTextureIDs[a_texture] = a_newID;
 }
 
 void OBJMaterial::SetName(std::string a_name)
@@ -85,7 +85,7 @@ void OBJMaterial::SetKS(glm::vec4 a_kS)
 
 unsigned int OBJMaterial::GetTextureID(OBJMaterial::TEXTURE_TYPES a_texture)
 {
-	return m_textureIDs[a_texture];
+	return m_uiTextureIDs[a_texture];
 }
 
 const std::string OBJMaterial::GetName() const
@@ -145,8 +145,10 @@ void OBJMesh::CalculateFaceNormals()
 		glm::vec4 normal = CalculateFaceNormal(i, i + 1, i + 2);
 		// Set face normal to each vertex for the tri.
 		m_vertices[i].SetNormal(normal);
-		m_vertices[i + 1].SetNormal(normal);
-		m_vertices[i + 2].SetNormal(normal);
+		i += 1;
+		m_vertices[i++].SetNormal(normal);
+		i += 1;
+		m_vertices[i].SetNormal(normal);
 	}
 }
 
@@ -167,7 +169,7 @@ void OBJMesh::SetIndices(std::vector<unsigned int> a_indices)
 
 void OBJMesh::SetMaterial(OBJMaterial* a_material)
 {
-	m_pMaterial = a_material;
+	m_poMaterial = a_material;
 }
 
 const std::string OBJMesh::GetName() const
@@ -187,7 +189,7 @@ std::vector<unsigned int>* OBJMesh::GetIndices()
 
 OBJMaterial* OBJMesh::GetMaterial()
 {
-	return m_pMaterial;
+	return m_poMaterial;
 }
 
 bool OBJModel::Load(const char* a_filename)
@@ -301,7 +303,7 @@ bool OBJModel::Load(const char* a_filename)
 					{
 						glm::vec4 vertex = ProcessVectorString(data);
 						// Multiply by passed in vector to allow scaling of the model.
-						vertex *= m_modelScale;
+						vertex *= m_fModelScale;
 						// As this is positional data ensure the w component 
 						// is set to 1.0f;
 						vertex.w = 1.f;
@@ -343,9 +345,8 @@ bool OBJModel::Load(const char* a_filename)
 
 						// Face consists of 3 -> more vertices split at ' ' 
 						// then at '/' character.
-						std::vector<std::string> faceData =
-							SplitStringAtCharacter(data, ' ');
-						unsigned int ci = (unsigned int)pCurrentMesh->GetVertices()->size();
+						std::vector<std::string> faceData =	SplitStringAtCharacter(data, ' ');
+						unsigned int currentIndex = (unsigned int)pCurrentMesh->GetVertices()->size();
 
 						for (auto iterator = faceData.begin();
 							iterator != faceData.end();
@@ -377,20 +378,23 @@ bool OBJModel::Load(const char* a_filename)
 						// Time to index these into the current mesh.
 						for (unsigned int offset = 1; offset < (faceData.size() - 1); ++offset)
 						{
-							pCurrentMesh->GetIndices()->push_back(ci);
-							pCurrentMesh->GetIndices()->push_back(ci + offset);
-							pCurrentMesh->GetIndices()->push_back(ci + offset + 1);
+							pCurrentMesh->GetIndices()->push_back(currentIndex);
+							pCurrentMesh->GetIndices()->push_back(currentIndex + offset);
+							pCurrentMesh->GetIndices()->push_back(currentIndex + offset + 1);
 
 							// Test to see if the OBJ file contains normal data, 
 							// if normalData is empty then there are no normals.
 							if (calculateNormals)
 							{
-								glm::vec4 normal = pCurrentMesh->CalculateFaceNormal(ci,
-									ci + offset,
-									ci + offset + 1);
-								(*pCurrentMesh->GetVertices())[ci].SetNormal(normal);
-								(*pCurrentMesh->GetVertices())[ci + offset].SetNormal(normal);
-								(*pCurrentMesh->GetVertices())[ci + offset + 1].SetNormal(normal);
+								unsigned int index = currentIndex;
+								glm::vec4 normal = pCurrentMesh->CalculateFaceNormal(index,
+									index + offset,
+									index + offset + 1);
+								(*pCurrentMesh->GetVertices())[index].SetNormal(normal);
+								index += offset;
+								(*pCurrentMesh->GetVertices())[index].SetNormal(normal);
+								index += 1;
+								(*pCurrentMesh->GetVertices())[index].SetNormal(normal);
 							}
 						}
 
@@ -455,11 +459,6 @@ const glm::mat4& OBJModel::GetWorldMatrix() const
 {
 	return m_worldMatrix;
 }
-
-//OBJMesh* OBJModel::GetMeshByName(const char* a_name)
-//{
-//
-//}
 
 OBJMesh* OBJModel::GetMeshByIndex(unsigned int a_index)
 {
