@@ -99,8 +99,9 @@ unsigned int ShaderUtilities::LoadShaderInternal(const char* a_filename, unsigne
 	// Get the shader source from the file.
 	char* source = Utilities::FileToBuffer(a_filename);
 	unsigned int shader = glCreateShader(a_type);
+	const GLsizei elementCount = 1;
 	// Set the source buffer for the shader.
-	glShaderSource(shader, 1, (const char**)&source, 0);
+	glShaderSource(shader, elementCount, (const char**)&source, 0);
 	glCompileShader(shader);
 	// As the buffer from fileToBuffer was allocated this needs to be destroyed.
 	delete[] source;

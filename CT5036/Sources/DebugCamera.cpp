@@ -116,12 +116,12 @@ void DebugCamera::Move(float a_deltaTime, const glm::vec3& a_up)
 		siPreviousMouseX = mouseX;
 		siPreviousMouseY = mouseY;
 		glm::mat4 mMat;
-		const float number = 150.0f;
+		const float sensitivityModifier = 170.0f;
 
 		// Pitch.
 		if (iDeltaY != 0)
 		{
-			mMat = glm::axisAngleMatrix(vRight.xyz(), (float)-iDeltaY / number);
+			mMat = glm::axisAngleMatrix(vRight.xyz(), (float)-iDeltaY / sensitivityModifier);
 			vRight = mMat * vRight;
 			vUp = mMat * vUp;
 			vForward = mMat * vForward;
@@ -130,7 +130,7 @@ void DebugCamera::Move(float a_deltaTime, const glm::vec3& a_up)
 		// Yaw.
 		if (iDeltaX != 0)
 		{
-			mMat = glm::axisAngleMatrix(a_up, (float)-iDeltaX / number);
+			mMat = glm::axisAngleMatrix(a_up, (float)-iDeltaX / sensitivityModifier);
 			vRight = mMat * vRight;
 			vUp = mMat * vUp;
 			vForward = mMat * vForward;
@@ -154,21 +154,23 @@ void DebugCamera::UpdateProjectionView()
 	// Send the projection matrix to the vertex shader.
 	// Ask the shader program for the location of the projection-view-
 	// matrix uniform variable.
-	int projectionViewUniformLocation =
-		glGetUniformLocation(m_poParentRenderer->GetProgram(), "projectionViewMatrix");
+	int projectionViewUniformLocation = glGetUniformLocation(m_poParentRenderer->GetProgram(),
+		"projectionViewMatrix");
+	const GLsizei elementsToModify = 1;
 	// Send this location a pointer to our glm::mat4 (send across float data).
 	glUniformMatrix4fv(projectionViewUniformLocation,
-		1,
+		elementsToModify,
 		false,
 		glm::value_ptr(m_projectionViewMatrix));
 }
 
 void DebugCamera::UpdateCameraPosition()
 {
-	int cameraPositionUniformLocation =
-		glGetUniformLocation(m_poParentRenderer->GetProgram(), "cameraPosition");
+	int cameraPositionUniformLocation = glGetUniformLocation(m_poParentRenderer->GetProgram(),
+		"cameraPosition");
+	const GLsizei elementsToModify = 1;
 	glUniform4fv(cameraPositionUniformLocation,
-		1,
+		elementsToModify,
 		glm::value_ptr(m_cameraMatrix[3]));
 }
 

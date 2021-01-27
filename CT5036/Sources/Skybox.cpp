@@ -24,7 +24,9 @@ Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiSkyboxVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(m_fSkyboxVertices), &m_fSkyboxVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	const GLsizei vertexComponents = 3;
+	const GLsizei byteOffset = 3 * sizeof(float);
+	glVertexAttribPointer(0, vertexComponents, GL_FLOAT, GL_FALSE, byteOffset, (void*)0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -41,9 +43,10 @@ Skybox::~Skybox()
 		m_poCubemap = nullptr;
 	}
 
-	glDeleteTextures(1, &m_uiCubemapTexture);
-	glDeleteVertexArrays(1, &m_uiSkyboxVAO);
-	glDeleteBuffers(1, &m_uiSkyboxVAO);
+	const GLsizei toDelete = 1;
+	glDeleteTextures(toDelete, &m_uiCubemapTexture);
+	glDeleteVertexArrays(toDelete, &m_uiSkyboxVAO);
+	glDeleteBuffers(toDelete, &m_uiSkyboxVAO);
 }
 
 unsigned int Skybox::GetTexture() const

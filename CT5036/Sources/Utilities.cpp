@@ -48,8 +48,9 @@ GLuint Utilities::CreateShader(const char* a_strShaderFile, unsigned int a_eShad
 	char const* szShaderSourcePointer = strShaderCode.c_str();
 	// Create shader ID.
 	GLuint uiShader = glCreateShader(a_eShaderType);
+	const GLsizei elementCount = 1;
 	// Load source code.
-	glShaderSource(uiShader, 1, &szShaderSourcePointer, NULL);
+	glShaderSource(uiShader, elementCount, &szShaderSourcePointer, NULL);
 	// Compile shader.
 	glCompileShader(uiShader);
 	// Check for compilation errors and output them.

@@ -44,7 +44,8 @@ bool Texture::Load(std::string a_filename)
 		m_uiWidth = width;
 		m_uiHeight = height;
 		m_filename = a_filename;
-		glGenTextures(1, &m_uiTextureID);
+		const GLsizei namesToGenerate = 1;
+		glGenTextures(namesToGenerate, &m_uiTextureID);
 		glBindTexture(GL_TEXTURE_2D, m_uiTextureID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D,

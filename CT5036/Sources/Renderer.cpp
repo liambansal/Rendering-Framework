@@ -117,40 +117,46 @@ bool Renderer::OnCreate()
 #endif // WIN64 / NX64.
 
 	m_uiProgram = ShaderUtilities::CreateProgram(vertexShader, fragmentShader);
+	const unsigned int lineCount = 42;
 	// Create a grid of lines to be drawn during our update.
-	// Create a 10x10 square grid.
 	m_pLines = new Line[42];
 	const glm::vec4 white(1.f, 1.f, 1.f, 1.f);
 	const glm::vec4 black(0.f, 0.f, 0.f, 1.f);
+	const float lineSpace = 10.0f;
 
-	for (int i = 0, j = 0; i < 21; ++i, j += 2)
+	// Create a 10x10 square grid.
+	for (unsigned int i = 0, j = 0; i < lineCount * 0.5f; ++i, j += 2)
 	{
-		m_pLines[j].v0.position = glm::vec4(-10 + i, 0.f, 10.f, 1.f);
-		m_pLines[j].v0.colour = (i == 10) ? white : black;
-		m_pLines[j].v1.position = glm::vec4(-10 + i, 0.f, -10.f, 1.f);
-		m_pLines[j].v1.colour = (i == 10) ? white : black;
+		m_pLines[j].v0.position = glm::vec4(-lineSpace + i, 0.f, lineSpace, 1.f);
+		m_pLines[j].v0.colour = (i == lineSpace) ? white : black;
+		m_pLines[j].v1.position = glm::vec4(-lineSpace + i, 0.f, -lineSpace, 1.f);
+		m_pLines[j].v1.colour = (i == lineSpace) ? white : black;
 
-		m_pLines[j + 1].v0.position = glm::vec4(10, 0.f, -10.f + i, 1.f);
-		m_pLines[j + 1].v0.colour = (i == 10) ? white : black;
-		m_pLines[j + 1].v1.position = glm::vec4(-10, 0.f, -10.f + i, 1.f);
-		m_pLines[j + 1].v1.colour = (i == 10) ? white : black;
+		m_pLines[j + 1].v0.position = glm::vec4(lineSpace, 0.f, -lineSpace + i, 1.f);
+		m_pLines[j + 1].v0.colour = (i == lineSpace) ? white : black;
+		m_pLines[j + 1].v1.position = glm::vec4(-lineSpace, 0.f, -lineSpace + i, 1.f);
+		m_pLines[j + 1].v1.colour = (i == lineSpace) ? white : black;
 	}
 
-	glGenBuffers(1, &m_uiLineVBO);
+	const GLsizei buffersToGenerate = 1;
+	glGenBuffers(buffersToGenerate, &m_uiLineVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
 	// Fill the vertex buffer with line data.
-	glBufferStorage(GL_ARRAY_BUFFER, sizeof(Line) * 42, m_pLines, 0);
+	glBufferStorage(GL_ARRAY_BUFFER, sizeof(Line) * lineCount, m_pLines, 0);
+	const GLsizei VAOsToGenerate = 1;
 	// Generate our vertex array object.
-	glGenVertexArrays(1, &m_uiLinesVAO);
+	glGenVertexArrays(VAOsToGenerate, &m_uiLinesVAO);
 	glBindVertexArray(m_uiLinesVAO);
+	unsigned int index = 0;
+	const GLsizei vertexComponents = 4;
 	// Enable the vertex array state since we're sending in an array of 
 	// vertices.
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(index);
+	glVertexAttribPointer(index, vertexComponents, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glEnableVertexAttribArray(++index);
 	// Specify where our vertex array is, how many components each vertex has, 
 	// the data type of each component and whether the data is normalized.
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
+	glVertexAttribPointer(index, vertexComponents, GL_FLOAT, GL_FALSE, sizeof(Vertex), ((char*)0) + 16);
 	glBindBuffer(GL_ARRAY_BUFFER, m_uiLineVBO);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -204,20 +210,40 @@ bool Renderer::OnCreate()
 #endif // WIN64 / NX64.
 
 			m_uiOBJProgram = ShaderUtilities::CreateProgram(objVertexShader, objFragmentShader);
+			const GLsizei buffersToGenerate = 2;
 			// Set up vertex and index buffer for OBJ rendering.
-			glGenBuffers(2, m_uiOBJModelBuffer);
+			glGenBuffers(buffersToGenerate, m_uiOBJModelBuffer);
 			// Set up vertex buffer data.
 			glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
+			// Reset index to zero.
+			index = 0;
 			// Position.
-			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(index,
+				vertexComponents,
+				GL_FLOAT,
+				GL_FALSE,
+				sizeof(OBJVertex),
+				((char*)0) + OBJVertex::OFFSETS_POSITION_OFFSET);
 			// Normal.
-			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(++index);
+			glVertexAttribPointer(index,
+				vertexComponents,
+				GL_FLOAT,
+				GL_TRUE,
+				sizeof(OBJVertex),
+				((char*)0) + OBJVertex::OFFSETS_NORMAL_OFFSET);
 			// UV Coordinates.
-			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_POSITION_OFFSET);
-			glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_NORMAL_OFFSET);
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_UV_COORDINATE_OFFSET);
+			glEnableVertexAttribArray(++index);
+			const GLsizei vertexComponents = 4;
+			const GLsizei uvComponents = 2;
+			glVertexAttribPointer(index,
+				uvComponents,
+				GL_FLOAT,
+				GL_TRUE,
+				sizeof(OBJVertex),
+				((char*)0) + OBJVertex::OFFSETS_UV_COORDINATE_OFFSET);
 			glBindVertexArray(0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -242,11 +268,13 @@ bool Renderer::OnCreate()
 	unsigned int skyboxFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_fragment.glsl",
 		GL_FRAGMENT_SHADER);
 	// Create a shader program using the skybox shader files.
-	m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
+	m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader,
+		skyboxFragmentShader);
 	// Set program to the skybox shader ID.
 	SetProgram(m_uiSkyboxProgram);
 	int skyboxUniformLocation = glGetUniformLocation(m_uiSkyboxProgram, "skybox");
-	glUniform1i(skyboxUniformLocation, 3);
+	const GLsizei uniformScalar = 3;
+	glUniform1i(skyboxUniformLocation, uniformScalar);
 	return true;
 }
 
@@ -327,27 +355,40 @@ void Renderer::Draw()
 
 			if (pMaterial)
 			{
+				const GLsizei elementsToModify = 1;
 				// Send the OBJ model's world data across to the shader program.
-				glUniform4fv(kALocation, 1, glm::value_ptr(*pMaterial->GetKA()));
-				glUniform4fv(kDLocation, 1, glm::value_ptr(*pMaterial->GetKD()));
-				glUniform4fv(kSLocation, 1, glm::value_ptr(*pMaterial->GetKS()));
+				glUniform4fv(kALocation,
+					elementsToModify,
+					glm::value_ptr(*pMaterial->GetKA()));
+				glUniform4fv(kDLocation,
+					elementsToModify,
+					glm::value_ptr(*pMaterial->GetKD()));
+				glUniform4fv(kSLocation,
+					elementsToModify,
+					glm::value_ptr(*pMaterial->GetKS()));
 
 				// Get the location of the diffuse texture.
-				int textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "diffuseTexture");
+				int textureUniformLocation = glGetUniformLocation(m_uiOBJProgram,
+					"diffuseTexture");
 				// Set diffuse texture to be GL_Texture0.
 				glUniform1i(textureUniformLocation, 0);
 				// Set the active texture unit to texture0.
 				glActiveTexture(GL_TEXTURE0);
 				// Bind the texture for diffuse for this material to the texture0.
-				glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_DIFFUSE));
-				textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "specularTexture");
+				glBindTexture(GL_TEXTURE_2D,
+					pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_DIFFUSE));
+				textureUniformLocation = glGetUniformLocation(m_uiOBJProgram,
+					"specularTexture");
 				glUniform1i(textureUniformLocation, 1);
 				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_SPECULAR));
-				textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "normalTexture");
+				glBindTexture(GL_TEXTURE_2D,
+					pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_SPECULAR));
+				textureUniformLocation = glGetUniformLocation(m_uiOBJProgram,
+					"normalTexture");
 				glUniform1i(textureUniformLocation, 2);
 				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_NORMAL));
+				glBindTexture(GL_TEXTURE_2D,
+					pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_NORMAL));
 			}
 			// No material to obtain lighting information from so use defaults.
 			else
@@ -355,9 +396,15 @@ void Renderer::Draw()
 				// Elements to modify. 1 indicates we're not modifying an array.
 				const GLsizei elementsToModify = 1;
 				// Send the OBJ model's world matrix data across to the shader program.
-				glUniform4fv(kALocation, elementsToModify, glm::value_ptr(glm::vec4(0.25f, 0.25f, 0.25f, 1.f)));
-				glUniform4fv(kDLocation, elementsToModify, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
-				glUniform4fv(kSLocation, elementsToModify, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 64.f)));
+				glUniform4fv(kALocation,
+					 elementsToModify,
+					glm::value_ptr(glm::vec4(0.25f, 0.25f, 0.25f, 1.f)));
+				glUniform4fv(kDLocation,
+					 elementsToModify,
+					glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
+				glUniform4fv(kSLocation,
+					 elementsToModify,
+					glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 64.f)));
 			}
 
 			glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
@@ -371,7 +418,9 @@ void Renderer::Draw()
 				pMesh->GetIndices()->size() * sizeof(unsigned int),
 				pMesh->GetIndices()->data(),
 				GL_STATIC_DRAW);
-			glDrawElements(GL_TRIANGLES, (GLsizei)pMesh->GetIndices()->size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES,
+				(GLsizei)pMesh->GetIndices()->size(),
+				GL_UNSIGNED_INT, 0);
 		}
 	}
 

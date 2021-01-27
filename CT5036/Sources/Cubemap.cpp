@@ -22,7 +22,8 @@ unsigned int Cubemap::Load(std::vector<std::string> a_texturesFaces)
 {
 	unsigned int textureID = 0;
 #ifdef WIN64
-	glGenTextures(1, &textureID);
+	const GLsizei texturesToGenerate = 1;
+	glGenTextures(texturesToGenerate, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	int width = 0;
 	int height = 0;
