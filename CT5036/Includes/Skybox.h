@@ -14,6 +14,9 @@ class Cubemap;
 class DebugCamera;
 class Renderer;
 
+/// <summary>
+/// For creating a skybox environment background within the scene.
+/// </summary>
 class Skybox
 {
 public:

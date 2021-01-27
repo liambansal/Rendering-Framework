@@ -9,7 +9,10 @@
 
 #include <vector>
 
-// Class implements a singleton design pattern.
+/// <summary>
+/// A utility class for creating shader programs.
+/// Class implements a singleton design pattern. 
+/// </summary>
 class ShaderUtilities
 {
 public:

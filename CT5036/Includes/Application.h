@@ -13,6 +13,9 @@
 
 struct GLFWwindow;
 
+/// <summary>
+/// Responsible for creating the application window and keeping it running through updates and draw calls.
+/// </summary>
 class Application
 {
 public:

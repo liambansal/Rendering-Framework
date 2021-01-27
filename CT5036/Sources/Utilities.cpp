@@ -162,7 +162,7 @@ float Utilities::GetTotalTime()
 	return s_totalTime;
 }
 
-char* Utilities::fileToBuffer(const char* a_sPath)
+char* Utilities::FileToBuffer(const char* a_sPath)
 {
 	// Get an fstream to read in the file data.
 	std::fstream file;

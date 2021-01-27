@@ -7,7 +7,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-// Includes.
 #include "Application.h"
 #ifdef WIN64
 #include "GLAD/glad.h"
@@ -18,11 +17,13 @@
 #include <nn/gll.h>
 #endif // NX64.
 
-// Forward Declarations.
 class DebugCamera;
 class OBJModel;
 class Skybox;
 
+/// <summary>
+/// Renders and stores references to all scene objects and UI elements. Also updates rendering related objects such as cameras.
+/// </summary>
 class Renderer : public Application
 {
 public:

@@ -37,17 +37,16 @@ DebugCamera::DebugCamera(Renderer* a_parentRenderer) : mc_fCameraSpeed(6.0f),
 DebugCamera::~DebugCamera()
 {}
 
-// Utility for mouse/keyboard movement of a matrix transform (suitable for 
-// camera).
-void DebugCamera::FreeMovement(float a_deltaTime, const glm::vec3& a_up)
+// Utility for mouse/keyboard movement of a matrix transform.
+void DebugCamera::Move(float a_deltaTime, const glm::vec3& a_up)
 {
 #ifdef WIN64
 	// Get the current window context.
 	GLFWwindow* window = glfwGetCurrentContext();
 	// Get the camera's forward, right, up and location vectors.
-	glm::vec4 vForward = m_cameraMatrix[2];
 	glm::vec4 vRight = m_cameraMatrix[0];
 	glm::vec4 vUp = m_cameraMatrix[1];
+	glm::vec4 vForward = m_cameraMatrix[2];
 	glm::vec4 vTranslation = m_cameraMatrix[3];
 	// Test to see if the left shift key is pressed. We will use left shift to 
 	// the speed of the camera movement.

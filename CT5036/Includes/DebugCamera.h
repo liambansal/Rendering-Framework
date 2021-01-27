@@ -7,12 +7,14 @@
 #ifndef DEBUG_CAMERA_H
 #define DEBUG_CAMERA_H
 
-// Includes.
 #include "Renderer.h"
 #ifdef NX64
 #include <nn/nn_Macro.h>
 #endif // NX64.
 
+/// <summary>
+/// Used to navigate the scene view and update the screen perspective.
+/// </summary>
 class DebugCamera : public Renderer
 {
 public:
@@ -21,9 +23,8 @@ public:
 	// Destructor.
 	~DebugCamera();
 
-	// Utility for mouse/keyboard movement of a matrix transform (suitable for
-	// camera).
-	void FreeMovement(float a_deltaTime,
+	// Utility for mouse/keyboard movement of a matrix transform.
+	void Move(float a_deltaTime,
 		const glm::vec3& a_up = glm::vec3(0, 1, 0));
 	void UpdateProjectionView();
 	void UpdateCameraPosition();

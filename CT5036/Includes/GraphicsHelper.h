@@ -19,6 +19,9 @@
 #ifndef GRAPHICS_HELPER_H
 #define GRAPHICS_HELPER_H
 
+/// <summary>
+/// Helps with rendering on the NX64 platform.
+/// </summary>
 class GraphicsHelper
 {
 public:

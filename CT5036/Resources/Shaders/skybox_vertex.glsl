@@ -5,7 +5,7 @@
 //////////////////////////////
 
 #version 460
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec3 aPosition;
 
 out vec3 textureCoordinates;
 
@@ -14,7 +14,6 @@ uniform mat4 view;
 
 void main()
 {
-	textureCoordinates = aPos;
-    vec4 position = projection * view * vec4(aPos, 1.0);
-    gl_Position = position.xyww;
+	textureCoordinates = aPosition;
+    gl_Position = projection * view * vec4(aPosition, 1.0);
 }

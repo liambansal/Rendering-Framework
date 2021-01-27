@@ -16,7 +16,9 @@
 #include <nn/gll.h>
 #endif // NX64.
 
-// A utility class with static helper methods.
+/// <summary>
+/// A utility class with static helper methods for shader and timers.
+/// </summary>
 class Utilities
 {
 public:
@@ -26,12 +28,10 @@ public:
 	// Utilities for timing.
 	static void ResetTimer();
 	static float TickTimer();
-	// Get() updates timers and returns time since last Get call.
 	static float GetDeltaTime();
 	static float GetTotalTime();
-
 	// Helper function for loading shader code into memory.
-	static char* fileToBuffer(const char* a_sPath);
+	static char* FileToBuffer(const char* a_sPath);
 };
 
 #endif // UTILITIES_H.

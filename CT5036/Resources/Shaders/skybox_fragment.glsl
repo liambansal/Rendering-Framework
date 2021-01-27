@@ -4,7 +4,6 @@
 /// Date Created: 05/01/2021.
 //////////////////////////////
 
-
 #version 460
 out vec4 FragColor;
 

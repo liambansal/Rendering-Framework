@@ -97,7 +97,7 @@ unsigned int ShaderUtilities::LoadShaderInternal(const char* a_filename, unsigne
 	// Integer to test for shader creation success.
 	int success = GL_FALSE;
 	// Get the shader source from the file.
-	char* source = Utilities::fileToBuffer(a_filename);
+	char* source = Utilities::FileToBuffer(a_filename);
 	unsigned int shader = glCreateShader(a_type);
 	// Set the source buffer for the shader.
 	glShaderSource(shader, 1, (const char**)&source, 0);

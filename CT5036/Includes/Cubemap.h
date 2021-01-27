@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+/// <summary>
+/// Supports the loading of textures in the form of a cubemap.
+/// </summary>
 class Cubemap
 {
 public:

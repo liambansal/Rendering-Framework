@@ -6,6 +6,7 @@
 
 #include "Texture.h" // File's header.
 #include <iostream>
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #ifdef WIN64
 #include "GLAD/glad.h"
@@ -74,6 +75,17 @@ bool Texture::Load(std::string a_filename)
 void Texture::Unload()
 {
 	glDeleteTextures(1, &m_uiTextureID);
+}
+
+void Texture::SetFilename(const char* a_pFilename)
+{
+	m_filename = a_pFilename;
+}
+
+void Texture::SetDimensions(const unsigned int a_width, const unsigned int a_height)
+{
+	m_uiWidth = a_width;
+	m_uiHeight = a_height;
 }
 
 const std::string& Texture::GetFileName() const

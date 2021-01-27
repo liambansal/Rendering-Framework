@@ -12,10 +12,13 @@
 
 class Texture;
 
+/// <summary>
+/// Handles loading and other management of all texture classes.
+/// Acts as a singleton object for ease of access.
+/// </summary>
 class TextureManager
 {
 public:
-	// This manager class will act as a singleton object for ease of access.
 	static TextureManager* CreateInstance();
 	static TextureManager* GetInstance();
 	static void DestroyInstance();
@@ -26,7 +29,7 @@ public:
 	void ReleaseTexture(unsigned int a_texture);
 
 private:
-	// Structure to reference conut a texture.
+	// Structure to reference count a texture.
 	typedef struct TextureReference
 	{
 		Texture* pTexture;

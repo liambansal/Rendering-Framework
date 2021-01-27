@@ -10,8 +10,7 @@
 #include "GLAD/glad.h"
 #endif // WIN64.
 #include "GLM/glm.hpp"
-#define STB_IMAGE_IMPLEMENTATION
-#include "STB/stb_image.h"
+#include "stb_image.h"
 
 Cubemap::Cubemap()
 {}
@@ -27,16 +26,19 @@ unsigned int Cubemap::Load(std::vector<std::string> a_texturesFaces)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	int width = 0;
 	int height = 0;
-	int nrChannels = 0;
+	int channels = 0;
 
 	for (unsigned int i = 0; i < a_texturesFaces.size(); ++i)
 	{
-		// Loading with current texture filenames endlessly produces garbage in the console window.
-		unsigned char* data = stbi_load(a_texturesFaces[i].c_str(), &width, &height, &nrChannels, 0);
+		unsigned char* data = stbi_load(a_texturesFaces[i].c_str(),
+			&width,
+			&height,
+			&channels,
+			0);
 
 		if (data)
 		{
-			std::cout << "Successfully loaded cubemap texture: " << data << std::endl;
+			std::cout << "Successfully loaded cubemap texture: " << a_texturesFaces[i] << std::endl;
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				0,
 				GL_RGB,

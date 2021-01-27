@@ -236,23 +236,23 @@ bool Renderer::OnCreate()
 	std::free(fileDataCache);
 #endif // NX64.
 
-	//// Configure skybox shader.
-	//unsigned int skyboxVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_vertex.glsl",
-	//	GL_VERTEX_SHADER);
-	//unsigned int skyboxFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_fragment.glsl",
-	//	GL_FRAGMENT_SHADER);
-	//// Create a shader program using the skybox shader files.
-	//m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
-	//// Set program to the skybox shader ID.
-	//SetProgram(m_uiSkyboxProgram);
-	//int skyboxUniformLocation = glGetUniformLocation(m_uiSkyboxProgram, "skybox");
-	//glUniform1i(skyboxUniformLocation, 3);
+	// Configure skybox shader.
+	unsigned int skyboxVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_vertex.glsl",
+		GL_VERTEX_SHADER);
+	unsigned int skyboxFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/skybox_fragment.glsl",
+		GL_FRAGMENT_SHADER);
+	// Create a shader program using the skybox shader files.
+	m_uiSkyboxProgram = ShaderUtilities::CreateProgram(skyboxVertexShader, skyboxFragmentShader);
+	// Set program to the skybox shader ID.
+	SetProgram(m_uiSkyboxProgram);
+	int skyboxUniformLocation = glGetUniformLocation(m_uiSkyboxProgram, "skybox");
+	glUniform1i(skyboxUniformLocation, 3);
 	return true;
 }
 
 void Renderer::Update(float a_deltaTime)
 {
-	m_poDebugCamera->FreeMovement(a_deltaTime);
+	m_poDebugCamera->Move(a_deltaTime);
 }
 
 void Renderer::Draw()
@@ -265,42 +265,45 @@ void Renderer::Draw()
 	glClearColor(redValue, greenValue, blueValue, alphaValue);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glDepthMask(GL_FALSE);
+	SetProgram(m_uiSkyboxProgram);
+	glm::vec3 forward(m_poDebugCamera->GetCameraMatrix()[2].x,
+		-m_poDebugCamera->GetCameraMatrix()[2].y, 
+		m_poDebugCamera->GetCameraMatrix()[2].z);
+	glm::vec3 up(0.0f, 1.0f, 0.0f);
+	glm::mat4 cubeDirection = glm::lookAt(glm::vec3(0.0f),
+		glm::vec3(0.0f) + forward,
+		up);
+	// Value of 1 specifies target variable to modify is not an array.
+	const unsigned int matricesToModify = 1;
+	int viewLocation = glGetUniformLocation(GetProgram(), "view");
+	glUniformMatrix4fv(viewLocation,
+		matricesToModify,
+		GL_FALSE,
+		&cubeDirection[0][0]);
+	int projectionViewLocation = glGetUniformLocation(GetProgram(), "projection");
+	glUniformMatrix4fv(projectionViewLocation,
+		matricesToModify,
+		GL_FALSE,
+		&m_poDebugCamera->GetProjectionMatrix()[0][0]);
+	glBindVertexArray(m_poSkybox->GetVAO());
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_poSkybox->GetTexture());
+	const GLsizei skyboxIndices = 36;
+	glDrawArrays(GL_TRIANGLES, 0, skyboxIndices);
+	glDepthMask(GL_TRUE);
+
 	// Enable shaders.
 	SetProgram(m_uiProgram);
 	glBindVertexArray(m_uiLinesVAO);
 	m_poDebugCamera->UpdateProjectionView();
-	glDrawArrays(GL_LINES, 0, 42 * 2);
+	const GLsizei gridIndices = 42 * 2;
+	glDrawArrays(GL_LINES, 0, gridIndices);
 	glBindVertexArray(0);
 	SetProgram(0);
 	SetProgram(m_uiOBJProgram);
 	glBindVertexArray(m_uiOBJModelVAO);
 	m_poDebugCamera->UpdateProjectionView();
-
-	//SetProgram(0);
-	//// Change depth function so depth test passes when values are equal to 
-	//// depth buffer's content.
-	//glDepthFunc(GL_LEQUAL);
-	//SetProgram(m_uiSkyboxProgram);
-	//// Remove translation from the view matrix.
-	////glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	//int viewLocation = glGetUniformLocation(GetProgram(), "view");
-	//glUniformMatrix4fv(viewLocation,
-	//	1,
-	//	GL_FALSE,
-	//	&m_poDebugCamera->GetCameraMatrix()[0][0]);
-	//int projectionViewLocation = glGetUniformLocation(GetProgram(), "projection");
-	//glUniformMatrix4fv(projectionViewLocation,
-	//	1,
-	//	GL_FALSE,
-	//	&m_poDebugCamera->GetProjectionMatrix()[0][0]);
-	//// Skybox cube.
-	//glBindVertexArray(m_poSkybox->GetVAO());
-	//glActiveTexture(GL_TEXTURE3);
-	//glBindTexture(GL_TEXTURE_CUBE_MAP, m_poSkybox->GetTexture());
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
-	//glBindVertexArray(0);
-	//// Set depth function back to default.
-	//glDepthFunc(GL_LEQUAL);
 
 	for (unsigned int model = 0; model < m_uiNumberOfModels; ++model) {
 		for (unsigned int i = 0; i < m_poOBJModels[model]->GetMeshCount(); ++i)
@@ -310,7 +313,7 @@ void Renderer::Draw()
 				glGetUniformLocation(m_uiCurrentProgram, "modelMatrix");
 			// Send the OBJ model's world matrix data across to the shader program.
 			glUniformMatrix4fv(modelMatrixUnifromLocation,
-				1,
+				matricesToModify,
 				false,
 				glm::value_ptr(GetModel(model)->GetWorldMatrix()));
 			m_poDebugCamera->UpdateCameraPosition();
@@ -349,10 +352,12 @@ void Renderer::Draw()
 			// No material to obtain lighting information from so use defaults.
 			else
 			{
+				// Elements to modify. 1 indicates we're not modifying an array.
+				const GLsizei elementsToModify = 1;
 				// Send the OBJ model's world matrix data across to the shader program.
-				glUniform4fv(kALocation, 1, glm::value_ptr(glm::vec4(0.25f, 0.25f, 0.25f, 1.f)));
-				glUniform4fv(kDLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
-				glUniform4fv(kSLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 64.f)));
+				glUniform4fv(kALocation, elementsToModify, glm::value_ptr(glm::vec4(0.25f, 0.25f, 0.25f, 1.f)));
+				glUniform4fv(kDLocation, elementsToModify, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
+				glUniform4fv(kSLocation, elementsToModify, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 64.f)));
 			}
 
 			glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);

@@ -7,11 +7,13 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 
-// Includes.
 #include <GLM/glm.hpp>
 #include <vector>
 #include <string>
 
+/// <summary>
+/// Stores OBJ model vertex data for rendering a model at the correct point in the scene's world space.
+/// </summary>
 class OBJVertex
 {
 public:
@@ -71,7 +73,9 @@ inline bool OBJVertex::operator < (const OBJVertex& a_rhs) const
 	return memcmp(this, &a_rhs, sizeof(OBJVertex)) < 0;
 }
 
-// Materials have properties such as lights, textures and roughness.
+/// <summary>
+/// Stores an OBJ models material data. Materials have properties such as lights, textures and roughness.
+/// </summary>
 class OBJMaterial
 {
 public:
@@ -120,8 +124,9 @@ private:
 	glm::vec4 m_kS;
 };
 
-// An OBJ Model can be composed of many meshes. Much like any 3D model.
-// Use a class to store individual mesh data.
+/// <summary>
+/// Store individual OBJ model mesh data. OBJ Models can be composed of many meshes. Much like any 3D model.
+/// </summary>
 class OBJMesh
 {
 public:
@@ -159,6 +164,10 @@ inline OBJMesh::OBJMesh() : m_name(),
 inline OBJMesh::~OBJMesh()
 {}
 
+/// <summary>
+/// Use this class to create OBJ models inside the application.
+/// Makes use of vertex, material and mesh OBJ classes.
+/// </summary>
 class OBJModel
 {
 public:
