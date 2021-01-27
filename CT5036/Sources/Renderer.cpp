@@ -21,18 +21,23 @@
 
 // Constructor.
 Renderer::Renderer() : m_uiProgram(0),
-m_uiLineVBO(0),
-m_uiLinesVAO(0),
-m_uiOBJProgram(0),
-m_uiSkyboxProgram(0),
-m_uiCurrentProgram(0),
-m_uiOBJModelVAO(0),
-m_uiOBJModelBuffer(),
-m_poDebugCamera(nullptr),
-m_poOBJModel(nullptr),
-m_pLines(nullptr),
-m_poSkybox(nullptr)
-{}
+	m_uiLineVBO(0),
+	m_uiLinesVAO(0),
+	m_uiOBJProgram(0),
+	m_uiSkyboxProgram(0),
+	m_uiCurrentProgram(0),
+	m_uiOBJModelVAO(0),
+	m_uiNumberOfModels(0),
+	m_uiOBJModelBuffer(),
+	m_poDebugCamera(nullptr),
+	m_poOBJModels(),
+	m_pLines(nullptr),
+	m_poSkybox(nullptr)
+{
+	unsigned int modelArrayLength = sizeof(m_poOBJModels) / sizeof(m_poOBJModels[0]);
+	memset(m_poOBJModels, 0, modelArrayLength);
+	m_uiNumberOfModels = modelArrayLength;
+}
 
 // Destructor.
 Renderer::~Renderer()
@@ -59,9 +64,14 @@ const GLuint Renderer::GetProgram() const
 	return m_uiCurrentProgram;
 }
 
-const OBJModel* Renderer::GetModel() const
+const OBJModel* Renderer::GetModel(unsigned int a_model) const
 {
-	return m_poOBJModel;
+	return m_poOBJModels[a_model];
+}
+
+const unsigned int Renderer::GetNumberOfModels() const
+{
+	return m_uiNumberOfModels;
 }
 
 DebugCamera* Renderer::GetCamera() const
@@ -91,7 +101,6 @@ bool Renderer::OnCreate()
 	const size_t fileDataCacheSize = 128 * 1024 * 1024;
 	void* fileDataCache = std::malloc(fileDataCacheSize);
 	NN_ABORT_UNLESS_NOT_NULL(fileDataCache);
-	// TODO: initialize.
 	// Allocate file system cache memory and mount file system for the 
 	// resource data. (This allocated cache memory is used to store file system
 	// management information. It has nothing to do with file data cache).
@@ -146,66 +155,78 @@ bool Renderer::OnCreate()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_poDebugCamera = new DebugCamera(this);
-	m_poOBJModel = new OBJModel();
+#ifdef WIN64
+	m_poOBJModels[0] = new OBJModel("Resources/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj",
+		2.0f);
+	m_poOBJModels[1] = new OBJModel("Resources/obj_models/C1102056/C1102056.obj",
+		0.15f);
+#elif N64
+	m_poOBJModels[0] = new OBJModel("rom:/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj",
+		2.0f);
+	m_poOBJModels[1] = new OBJModel("rom:/obj_models/C1102056/C1102056.obj",
+		0.15f);
+#endif // WIN64 / N64.
 	m_poSkybox = new Skybox(this);
 
+	for (unsigned int model = 0; model < m_uiNumberOfModels; ++model) {
 #ifdef WIN64
-	if (m_poOBJModel->Load("Resources/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
+		if (m_poOBJModels[model]->Load(m_poOBJModels[model]->GetFilePath()))
 #elif NX64
-	// Slightly changed file path from win64 variant.
-	if (m_poOBJModel->Load("rom:/obj_models/Brass Lion Knocker/golden-lion-knocker-edit.obj"))
+		// Slightly changed file path from win64 variant.
+		if (m_poOBJModels[model]->Load(m_poOBJModels[model]->GetFilePath()))
 #endif // WIN64 / NX64.
-	{
-		TextureManager* pTextureManager = TextureManager::GetInstance();
-
-		// Load in the model's textures.
-		for (unsigned int i = 0; i < m_poOBJModel->GetMaterialCount(); ++i)
 		{
-			OBJMaterial* material = m_poOBJModel->GetMaterialByIndex(i);
+			TextureManager* pTextureManager = TextureManager::GetInstance();
 
-			for (int j = 0; j < OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_COUNT; ++j)
+			// Load in the model's textures.
+			for (unsigned int i = 0; i < m_poOBJModels[model]->GetMaterialCount(); ++i)
 			{
-				if (material->GetTextureFileName(j).size() > 0)
+				OBJMaterial* material = m_poOBJModels[model]->GetMaterialByIndex(i);
+
+				for (int j = 0; j < OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_COUNT; ++j)
 				{
-					unsigned int textureID = pTextureManager->LoadTexture(material->GetTextureFileName(j).c_str());
-					material->SetTextureID(j, textureID);
+					if (material->GetTextureFileName(j).size() > 0)
+					{
+						unsigned int textureID = pTextureManager->LoadTexture(material->GetTextureFileName(j).c_str());
+						material->SetTextureID(j, textureID);
+					}
 				}
 			}
-		}
 
-		// Setup shaders for OBJ model rendering.
-		// Create OBJ shader program.
+			// Setup shaders for OBJ model rendering.
+			// Create OBJ shader program.
 #ifdef WIN64
-		unsigned int objVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/obj_vertex.glsl", GL_VERTEX_SHADER);
-		unsigned int objFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/obj_fragment.glsl", GL_FRAGMENT_SHADER);
+			unsigned int objVertexShader = ShaderUtilities::LoadShader("Resources/Shaders/obj_vertex.glsl", GL_VERTEX_SHADER);
+			unsigned int objFragmentShader = ShaderUtilities::LoadShader("Resources/Shaders/obj_fragment.glsl", GL_FRAGMENT_SHADER);
 #elif NX64
-		unsigned int objVertexShader = ShaderUtilities::LoadShader("rom:/Shaders/obj_vertex.glsl", GL_VERTEX_SHADER);
-		unsigned int objFragmentShader = ShaderUtilities::LoadShader("rom:/Shaders/obj_fragment.glsl", GL_FRAGMENT_SHADER);
+			unsigned int objVertexShader = ShaderUtilities::LoadShader("rom:/Shaders/obj_vertex.glsl", GL_VERTEX_SHADER);
+			unsigned int objFragmentShader = ShaderUtilities::LoadShader("rom:/Shaders/obj_fragment.glsl", GL_FRAGMENT_SHADER);
 #endif // WIN64 / NX64.
 
-		m_uiOBJProgram = ShaderUtilities::CreateProgram(objVertexShader, objFragmentShader);
-		// Set up vertex and index buffer for OBJ rendering.
-		glGenBuffers(2, m_uiOBJModelBuffer);
-		// Set up vertex buffer data.
-		glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
-		// Position.
-		glEnableVertexAttribArray(0);
-		// Normal.
-		glEnableVertexAttribArray(1);
-		// UV Coordinates.
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_POSITION_OFFSET);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_NORMAL_OFFSET);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_UV_COORDINATE_OFFSET);
-		glBindVertexArray(0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-	else
-	{
-		std::cout << "Failed to Load Model.\n";
-		return false;
+			m_uiOBJProgram = ShaderUtilities::CreateProgram(objVertexShader, objFragmentShader);
+			// Set up vertex and index buffer for OBJ rendering.
+			glGenBuffers(2, m_uiOBJModelBuffer);
+			// Set up vertex buffer data.
+			glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
+			// Position.
+			glEnableVertexAttribArray(0);
+			// Normal.
+			glEnableVertexAttribArray(1);
+			// UV Coordinates.
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_POSITION_OFFSET);
+			glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_NORMAL_OFFSET);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), ((char*)0) + OBJVertex::OFFSETS_UV_COORDINATE_OFFSET);
+			glBindVertexArray(0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
+		else
+		{
+			std::cout << "Failed to Load Model.\n";
+			return false;
+		}
 	}
 
 #ifdef NX64
@@ -266,12 +287,12 @@ void Renderer::Draw()
 	//glUniformMatrix4fv(viewLocation,
 	//	1,
 	//	GL_FALSE,
-	//	&m_pDebugCamera->GetCameraMatrix()[0][0]);
+	//	&m_poDebugCamera->GetCameraMatrix()[0][0]);
 	//int projectionViewLocation = glGetUniformLocation(GetProgram(), "projection");
 	//glUniformMatrix4fv(projectionViewLocation,
 	//	1,
 	//	GL_FALSE,
-	//	&m_pDebugCamera->GetProjectionMatrix()[0][0]);
+	//	&m_poDebugCamera->GetProjectionMatrix()[0][0]);
 	//// Skybox cube.
 	//glBindVertexArray(m_poSkybox->GetVAO());
 	//glActiveTexture(GL_TEXTURE3);
@@ -281,71 +302,73 @@ void Renderer::Draw()
 	//// Set depth function back to default.
 	//glDepthFunc(GL_LEQUAL);
 
-	for (unsigned int i = 0; i < m_poOBJModel->GetMeshCount(); ++i)
-	{
-		// Get the model matrix location from the shader program.
-		int modelMatrixUnifromLocation =
-			glGetUniformLocation(m_uiCurrentProgram, "modelMatrix");
-		// Send the OBJ model's world matrix data across to the shader program.
-		glUniformMatrix4fv(modelMatrixUnifromLocation,
-			1,
-			false,
-			glm::value_ptr(GetModel()->GetWorldMatrix()));
-		m_poDebugCamera->UpdateCameraPosition();
-
-		OBJMesh* pMesh = m_poOBJModel->GetMeshByIndex(i);
-		OBJMaterial* pMaterial = pMesh->GetMaterial();
-		// Send material data to shader.
-		int kALocation = glGetUniformLocation(m_uiOBJProgram, "kA");
-		int kDLocation = glGetUniformLocation(m_uiOBJProgram, "kD");
-		int kSLocation = glGetUniformLocation(m_uiOBJProgram, "kS");
-
-		if (pMaterial)
+	for (unsigned int model = 0; model < m_uiNumberOfModels; ++model) {
+		for (unsigned int i = 0; i < m_poOBJModels[model]->GetMeshCount(); ++i)
 		{
-			// Send the OBJ model's world data across to the shader program.
-			glUniform4fv(kALocation, 1, glm::value_ptr(*pMaterial->GetKA()));
-			glUniform4fv(kDLocation, 1, glm::value_ptr(*pMaterial->GetKD()));
-			glUniform4fv(kSLocation, 1, glm::value_ptr(*pMaterial->GetKS()));
-
-			// Get the location of the diffuse texture.
-			int textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "diffuseTexture");
-			// Set diffuse texture to be GL_Texture0.
-			glUniform1i(textureUniformLocation, 0);
-			// Set the active texture unit to texture0.
-			glActiveTexture(GL_TEXTURE0);
-			// Bind the texture for diffuse for this material to the texture0.
-			glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_DIFFUSE));
-			textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "specularTexture");
-			glUniform1i(textureUniformLocation, 1);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_SPECULAR));
-			textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "normalTexture");
-			glUniform1i(textureUniformLocation, 2);
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_NORMAL));
-		}
-		// No material to obtain lighting information from so use defaults.
-		else
-		{
+			// Get the model matrix location from the shader program.
+			int modelMatrixUnifromLocation =
+				glGetUniformLocation(m_uiCurrentProgram, "modelMatrix");
 			// Send the OBJ model's world matrix data across to the shader program.
-			glUniform4fv(kALocation, 1, glm::value_ptr(glm::vec4(0.25f, 0.25f, 0.25f, 1.f)));
-			glUniform4fv(kDLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
-			glUniform4fv(kSLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 64.f)));
-		}
+			glUniformMatrix4fv(modelMatrixUnifromLocation,
+				1,
+				false,
+				glm::value_ptr(GetModel(model)->GetWorldMatrix()));
+			m_poDebugCamera->UpdateCameraPosition();
 
-		glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
-		glBufferData(GL_ARRAY_BUFFER,
-			pMesh->GetVertices()->size() * sizeof(OBJVertex),
-			pMesh->GetVertices()->data(),
-			GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			pMesh->GetIndices()->size() * sizeof(unsigned int),
-			pMesh->GetIndices()->data(),
-			GL_STATIC_DRAW);
-		glDrawElements(GL_TRIANGLES, (GLsizei)pMesh->GetIndices()->size(), GL_UNSIGNED_INT, 0);
-	}	
+			OBJMesh* pMesh = m_poOBJModels[model]->GetMeshByIndex(i);
+			OBJMaterial* pMaterial = pMesh->GetMaterial();
+			// Send material data to shader.
+			int kALocation = glGetUniformLocation(m_uiOBJProgram, "kA");
+			int kDLocation = glGetUniformLocation(m_uiOBJProgram, "kD");
+			int kSLocation = glGetUniformLocation(m_uiOBJProgram, "kS");
+
+			if (pMaterial)
+			{
+				// Send the OBJ model's world data across to the shader program.
+				glUniform4fv(kALocation, 1, glm::value_ptr(*pMaterial->GetKA()));
+				glUniform4fv(kDLocation, 1, glm::value_ptr(*pMaterial->GetKD()));
+				glUniform4fv(kSLocation, 1, glm::value_ptr(*pMaterial->GetKS()));
+
+				// Get the location of the diffuse texture.
+				int textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "diffuseTexture");
+				// Set diffuse texture to be GL_Texture0.
+				glUniform1i(textureUniformLocation, 0);
+				// Set the active texture unit to texture0.
+				glActiveTexture(GL_TEXTURE0);
+				// Bind the texture for diffuse for this material to the texture0.
+				glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_DIFFUSE));
+				textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "specularTexture");
+				glUniform1i(textureUniformLocation, 1);
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_SPECULAR));
+				textureUniformLocation = glGetUniformLocation(m_uiOBJProgram, "normalTexture");
+				glUniform1i(textureUniformLocation, 2);
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, pMaterial->GetTextureID(OBJMaterial::TEXTURE_TYPES::TEXTURE_TYPES_NORMAL));
+			}
+			// No material to obtain lighting information from so use defaults.
+			else
+			{
+				// Send the OBJ model's world matrix data across to the shader program.
+				glUniform4fv(kALocation, 1, glm::value_ptr(glm::vec4(0.25f, 0.25f, 0.25f, 1.f)));
+				glUniform4fv(kDLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
+				glUniform4fv(kSLocation, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 64.f)));
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, m_uiOBJModelBuffer[0]);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
+			glBufferData(GL_ARRAY_BUFFER,
+				pMesh->GetVertices()->size() * sizeof(OBJVertex),
+				pMesh->GetVertices()->data(),
+				GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_uiOBJModelBuffer[1]);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+				pMesh->GetIndices()->size() * sizeof(unsigned int),
+				pMesh->GetIndices()->data(),
+				GL_STATIC_DRAW);
+			glDrawElements(GL_TRIANGLES, (GLsizei)pMesh->GetIndices()->size(), GL_UNSIGNED_INT, 0);
+		}
+	}
 
 	glBindVertexArray(0);
 	SetProgram(0);
@@ -355,8 +378,13 @@ void Renderer::Destroy()
 {
 	delete m_poSkybox;
 	m_poSkybox = nullptr;
-	delete m_poOBJModel;
-	m_poOBJModel = nullptr;
+
+	for (unsigned int model = 0; model < m_uiNumberOfModels; ++model)
+	{
+		delete m_poOBJModels[model];
+		m_poOBJModels[model] = nullptr;
+	}
+
 	delete[] m_pLines;
 	m_pLines = nullptr;
 	glDeleteBuffers(1, &m_uiLineVBO);

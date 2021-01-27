@@ -26,7 +26,6 @@ Texture::~Texture()
 	Unload();
 }
 
-// TODO: use a texture manager for this.
 bool Texture::Load(std::string a_filename)
 {
 	int width = 0;

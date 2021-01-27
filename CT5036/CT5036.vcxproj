@@ -116,7 +116,7 @@
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(NintendoSdkIncludePath);$(IncludePath);$(ProjectDir)Includes;$(ProjectDir)Includes/GLM;$(ProjectDir)Includes/STB;$(SolutionDir)OBJLoader/Includes</IncludePath>
-    <LibraryPath>$(NintendoSdkLibraryPath);$(LibraryPath);$(SolutionDir)OBJLoader/Libraries;$(SolutionDir)NX64/$(Configuration);</LibraryPath>
+    <LibraryPath>$(NintendoSdkLibraryPath);$(LibraryPath);$(SolutionDir)OBJLoader/Libraries/$(Configuration);$(SolutionDir)NX64/$(Configuration)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -134,8 +134,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|NX64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)OBJLoader/Includes;$(ProjectDir)Includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)OBJLoader/Libraries$(Configuration);$(ProjectDir)Libraries/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <IncludePath>$(NintendoSdkIncludePath);$(SolutionDir)OBJLoader\Includes;$(ProjectDir)Includes;$(ProjectDir)Includes\GLM;$(ProjectDir)Includes\STB;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)OBJLoader/Libraries/$(Configuration);$(ProjectDir)Libraries/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <SourcePath>$(ProjectDir)Sources;$(VC_SourcePath);</SourcePath>
   </PropertyGroup>
   <PropertyGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|NX64'">
@@ -159,7 +159,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NN_ENABLE_ASSERT;NX64;NN_NINTENDO_SDK;NN_ENABLE_LOG;NN_SDK_BUILD_DEBUG;STB_IMAGE_IMPLEMENTATION;NOMINMAX;GLM_FORCE_SWIZZLE;GLM_FORCE_PURE;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NN_ENABLE_ASSERT;NX64;NN_NINTENDO_SDK;NN_ENABLE_LOG;NN_SDK_BUILD_DEBUG;NOMINMAX;GLM_FORCE_SWIZZLE;GLM_FORCE_PURE;GLM_ENABLE_EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
@@ -221,7 +221,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -230,6 +230,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>OBJLoader.lib;glm_static.lib;glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalNSODependencies>
+      </AdditionalNSODependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

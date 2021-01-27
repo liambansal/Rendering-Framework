@@ -9,6 +9,16 @@
 #include <iostream>
 #include <sstream>
 
+OBJModel::OBJModel(std::string a_filepath,
+	const float a_scale) : m_pCurrentMaterial(nullptr),
+	m_meshes(),
+	m_materials(),
+	m_worldMatrix(glm::mat4(1.0f))
+{
+	m_filePath = a_filepath;
+	m_fModelScale = a_scale;
+}
+
 void OBJVertex::SetPosition(glm::vec4 a_position)
 {
 	m_position = a_position;
@@ -445,12 +455,12 @@ const char* OBJModel::GetFilePath() const
 	return m_filePath.c_str();
 }
 
-unsigned int OBJModel::GetMeshCount() const
+const unsigned int OBJModel::GetMeshCount() const
 {
 	return (unsigned int)m_meshes.size();
 }
 
-unsigned int OBJModel::GetMaterialCount() const
+const unsigned int OBJModel::GetMaterialCount() const
 {
 	return (unsigned int)m_materials.size();
 }

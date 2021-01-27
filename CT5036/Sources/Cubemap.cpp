@@ -22,6 +22,7 @@ Cubemap::~Cubemap()
 unsigned int Cubemap::Load(std::vector<std::string> a_texturesFaces)
 {
 	unsigned int textureID = 0;
+#ifdef WIN64
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	int width = 0;
@@ -30,7 +31,7 @@ unsigned int Cubemap::Load(std::vector<std::string> a_texturesFaces)
 
 	for (unsigned int i = 0; i < a_texturesFaces.size(); ++i)
 	{
-		// TODO FIX: loading with current texture filenames endlessly produces garbage in the console window.
+		// Loading with current texture filenames endlessly produces garbage in the console window.
 		unsigned char* data = stbi_load(a_texturesFaces[i].c_str(), &width, &height, &nrChannels, 0);
 
 		if (data)
@@ -59,5 +60,6 @@ unsigned int Cubemap::Load(std::vector<std::string> a_texturesFaces)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+#endif // WIN64.
 	return textureID;
 }

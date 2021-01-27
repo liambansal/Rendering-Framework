@@ -34,7 +34,8 @@ public:
 	const unsigned int GetWindowWidth() const;
 	const unsigned int GetWindowHeight() const;
 	const GLuint GetProgram() const;
-	const OBJModel* GetModel() const;
+	const OBJModel* GetModel(unsigned int a_model) const;
+	const unsigned int GetNumberOfModels() const;
 	DebugCamera* GetCamera() const;
 
 protected:
@@ -60,6 +61,7 @@ private:
 
 	void SetProgram(unsigned int a_program);
 
+	unsigned int m_uiNumberOfModels;
 	/// <summary>
 	/// Vertex buffer to hold our line data for the grid.
 	/// </summary>
@@ -75,7 +77,7 @@ private:
 	unsigned int m_uiOBJModelBuffer[2];
 
 	DebugCamera* m_poDebugCamera;
-	OBJModel* m_poOBJModel;
+	OBJModel* m_poOBJModels[2];
 	Line* m_pLines;
 	Skybox* m_poSkybox;
 };

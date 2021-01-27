@@ -17,7 +17,7 @@ Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
 	m_poParentRenderer(a_parentRenderer)
 {
 	m_poDebugCamera = m_poParentRenderer->GetCamera();
-	//// Skybox VAO & VBO.
+	// Skybox VAO & VBO.
 	//glGenVertexArrays(1, &m_uiSkyboxVAO);
 	//glGenBuffers(1, &m_uiSkyboxVBO);
 	//glBindVertexArray(m_uiSkyboxVAO);
@@ -29,8 +29,8 @@ Skybox::Skybox(Renderer* a_parentRenderer) : m_uiCubemapTexture(0),
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//// Load skybox face textures.
-	//m_pCubemap = new Cubemap();
-	//m_uiCubemapTexture = m_pCubemap->Load(m_skyboxFaces);
+	//m_poCubemap = new Cubemap();
+	//m_uiCubemapTexture = m_poCubemap->Load(m_skyboxFaces);
 }
 
 Skybox::~Skybox()

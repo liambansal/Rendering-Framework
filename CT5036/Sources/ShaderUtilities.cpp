@@ -142,8 +142,7 @@ void ShaderUtilities::DeleteShaderInternal(unsigned int a_shaderID)
 		if (*iterator == a_shaderID)
 		{
 			glDeleteShader(*iterator);
-			// TODO FIX: causes error.
-			//m_shaders.erase(iterator);
+			m_shaders.erase(iterator);
 			break;
 		}
 	}
@@ -205,8 +204,7 @@ void ShaderUtilities::DeleteProgramInternal(unsigned int a_program)
 		++iterator)
 	{
 		glDeleteProgram(*iterator);
-		// TODO FIX: causes error.
-		//m_programs.erase(iterator);
+		m_programs.erase(iterator);
 		break;
 	}
 }

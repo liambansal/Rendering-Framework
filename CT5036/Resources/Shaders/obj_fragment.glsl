@@ -29,7 +29,8 @@ vec4 lightDirection = normalize(vec4(0.f) - vec4(10.f, 8.f, 10.f, 0.f));
 
 void main()
 {
-	// Get texture data from UV coordinates.
+	// Get texture data from UV coordinates by storing the texture's texel 
+	// data at point vertexUV in sampler2D normalTexture.
 	vec4 normalData = texture(normalTexture, vertexUV);
 	vec4 diffuseData = texture(diffuseTexture, vertexUV);
 	vec4 specularData = texture(specularTexture, vertexUV);

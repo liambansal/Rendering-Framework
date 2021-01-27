@@ -163,14 +163,16 @@ class OBJModel
 {
 public:
 	OBJModel();
+	OBJModel(std::string a_filepath,
+		const float a_scale);
 	~OBJModel();
 
 	bool Load(const char* a_filename);
 	// Unloads and frees memory.
 	void Unload();
 	const char* GetFilePath() const;
-	unsigned int GetMeshCount() const;
-	unsigned int GetMaterialCount() const;
+	const unsigned int GetMeshCount() const;
+	const unsigned int GetMaterialCount() const;
 	const glm::mat4& GetWorldMatrix() const;
 	OBJMesh* GetMeshByIndex(unsigned int a_index);
 	OBJMaterial* GetMaterialByName(const char* a_name);
@@ -200,7 +202,6 @@ private:
 	glm::mat4 m_worldMatrix;
 };
 
-// Set 1.0f scale for Brass Lion Knocker and 0.15f scale for C1102056.
 inline OBJModel::OBJModel() : m_fModelScale(1.0f),
 	m_pCurrentMaterial(nullptr),
 	m_meshes(),
